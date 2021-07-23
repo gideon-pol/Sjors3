@@ -1,0 +1,67 @@
+﻿  glad.c
+  camera.cpp
+  EBO.cpp
+  ECS.cpp
+  FBO.cpp
+  main.cpp
+D:\Documents\andere dingen\repos\OpenGl-Game\Pixel3DOpenGL\main.cpp(61,69): warning C4244: 'argument': conversion from 'T' to 'int', possible loss of data
+          with
+          [
+              T=float
+          ]
+D:\Documents\andere dingen\repos\OpenGl-Game\Pixel3DOpenGL\main.cpp(61,45): warning C4244: 'argument': conversion from 'T' to 'int', possible loss of data
+          with
+          [
+              T=float
+          ]
+D:\Documents\andere dingen\repos\OpenGl-Game\Pixel3DOpenGL\main.cpp(74,31): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+D:\Documents\andere dingen\repos\OpenGl-Game\Pixel3DOpenGL\main.cpp(89,84): warning C4244: 'argument': conversion from 'T' to 'int', possible loss of data
+          with
+          [
+              T=float
+          ]
+D:\Documents\andere dingen\repos\OpenGl-Game\Pixel3DOpenGL\main.cpp(89,60): warning C4244: 'argument': conversion from 'T' to 'int', possible loss of data
+          with
+          [
+              T=float
+          ]
+D:\Documents\andere dingen\repos\OpenGl-Game\Pixel3DOpenGL\main.cpp(181,48): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+D:\Documents\andere dingen\repos\OpenGl-Game\Pixel3DOpenGL\main.cpp(182,63): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+D:\Documents\andere dingen\repos\OpenGl-Game\Pixel3DOpenGL\main.cpp(197,51): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\Documents\andere dingen\repos\OpenGl-Game\Pixel3DOpenGL\main.cpp(216,64): warning C4244: 'argument': conversion from 'T' to 'GLsizei', possible loss of data
+          with
+          [
+              T=float
+          ]
+D:\Documents\andere dingen\repos\OpenGl-Game\Pixel3DOpenGL\main.cpp(216,40): warning C4244: 'argument': conversion from 'T' to 'GLsizei', possible loss of data
+          with
+          [
+              T=float
+          ]
+  meshrenderer.cpp
+  object.cpp
+  renderer.cpp
+D:\Documents\andere dingen\repos\OpenGl-Game\Pixel3DOpenGL\renderer.cpp(44,60): warning C4267: 'argument': conversion from 'size_t' to 'GLsizei', possible loss of data
+D:\Documents\andere dingen\repos\OpenGl-Game\Pixel3DOpenGL\renderer.cpp(50,37): warning C4267: 'argument': conversion from 'size_t' to 'GLsizei', possible loss of data
+  shader.cpp
+  stb.cpp
+  texture.cpp
+  VAO.cpp
+  VBO.cpp
+  Generating Code...
+glfw3.lib(context.obj) : warning LNK4099: PDB 'glfw3.pdb' was not found with 'glfw3.lib(context.obj)' or at 'D:\Documents\andere dingen\repos\OpenGl-Game\x64\Debug\glfw3.pdb'; linking object as if no debug info
+glfw3.lib(init.obj) : warning LNK4099: PDB 'glfw3.pdb' was not found with 'glfw3.lib(init.obj)' or at 'D:\Documents\andere dingen\repos\OpenGl-Game\x64\Debug\glfw3.pdb'; linking object as if no debug info
+glfw3.lib(input.obj) : warning LNK4099: PDB 'glfw3.pdb' was not found with 'glfw3.lib(input.obj)' or at 'D:\Documents\andere dingen\repos\OpenGl-Game\x64\Debug\glfw3.pdb'; linking object as if no debug info
+glfw3.lib(monitor.obj) : warning LNK4099: PDB 'glfw3.pdb' was not found with 'glfw3.lib(monitor.obj)' or at 'D:\Documents\andere dingen\repos\OpenGl-Game\x64\Debug\glfw3.pdb'; linking object as if no debug info
+glfw3.lib(vulkan.obj) : warning LNK4099: PDB '' was not found with 'glfw3.lib(vulkan.obj)' or at ''; linking object as if no debug info
+glfw3.lib(window.obj) : warning LNK4099: PDB '' was not found with 'glfw3.lib(window.obj)' or at ''; linking object as if no debug info
+glfw3.lib(win32_init.obj) : warning LNK4099: PDB '' was not found with 'glfw3.lib(win32_init.obj)' or at ''; linking object as if no debug info
+glfw3.lib(win32_joystick.obj) : warning LNK4099: PDB 'glfw3.pdb' was not found with 'glfw3.lib(win32_joystick.obj)' or at 'D:\Documents\andere dingen\repos\OpenGl-Game\x64\Debug\glfw3.pdb'; linking object as if no debug info
+glfw3.lib(win32_monitor.obj) : warning LNK4099: PDB 'glfw3.pdb' was not found with 'glfw3.lib(win32_monitor.obj)' or at 'D:\Documents\andere dingen\repos\OpenGl-Game\x64\Debug\glfw3.pdb'; linking object as if no debug info
+glfw3.lib(win32_time.obj) : warning LNK4099: PDB 'glfw3.pdb' was not found with 'glfw3.lib(win32_time.obj)' or at 'D:\Documents\andere dingen\repos\OpenGl-Game\x64\Debug\glfw3.pdb'; linking object as if no debug info
+glfw3.lib(win32_thread.obj) : warning LNK4099: PDB 'glfw3.pdb' was not found with 'glfw3.lib(win32_thread.obj)' or at 'D:\Documents\andere dingen\repos\OpenGl-Game\x64\Debug\glfw3.pdb'; linking object as if no debug info
+glfw3.lib(win32_window.obj) : warning LNK4099: PDB '' was not found with 'glfw3.lib(win32_window.obj)' or at ''; linking object as if no debug info
+glfw3.lib(wgl_context.obj) : warning LNK4099: PDB '' was not found with 'glfw3.lib(wgl_context.obj)' or at ''; linking object as if no debug info
+glfw3.lib(egl_context.obj) : warning LNK4099: PDB 'glfw3.pdb' was not found with 'glfw3.lib(egl_context.obj)' or at 'D:\Documents\andere dingen\repos\OpenGl-Game\x64\Debug\glfw3.pdb'; linking object as if no debug info
+glfw3.lib(osmesa_context.obj) : warning LNK4099: PDB '' was not found with 'glfw3.lib(osmesa_context.obj)' or at ''; linking object as if no debug info
+  Pixel3DOpenGL.vcxproj -> D:\Documents\andere dingen\repos\OpenGl-Game\x64\Debug\Pixel3DOpenGL.exe
