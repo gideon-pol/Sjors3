@@ -24,7 +24,7 @@ public:
 	static void Draw(VAO VAO1, size_t count, Shader shader);
 	static void DrawQuad(Shader shader);
 	static void DrawScene();
-	static void DrawSceneShadowMap(glm::vec3 lightPos);
+	static void DrawSceneShadowMap(Shader shader);
 
 	template<typename T>
 	static void AddRenderComponent(T* component) {

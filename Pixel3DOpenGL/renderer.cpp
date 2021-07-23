@@ -18,8 +18,6 @@ Mesh quadMesh = Mesh(quad);
 VAO quadVAO;
 VBO quadVBO;
 
-Shader depthShader;
-
 void Renderer::Init() {
 	quadVAO = VAO();
 	quadVAO.Init();
@@ -30,7 +28,6 @@ void Renderer::Init() {
 	quadVAO.Unbind();
 	quadVBO.Unbind();
 
-	depthShader = Shader("depth.shader");
 }
 
 void Renderer::Clear() {
@@ -64,19 +61,12 @@ void Renderer::DrawScene() {
 	}
 }
 
-void Renderer::DrawSceneShadowMap(glm::vec3 lightPos) {
-	glm::mat4 lightProjection, lightView, lightSpaceMat;
-
-	float near = 0.01f, far = 50.0f;
-	lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near, far);
-	lightView = glm::lookAt(lightPos, glm::vec3(0), glm::vec3(0, 1, 0));
-	lightSpaceMat = lightProjection * lightView;
-	depthShader.Activate();
-	depthShader.SetMat4Parameter("lightSpaceMat", glm::value_ptr(lightSpaceMat));
-
+void Renderer::DrawSceneShadowMap(Shader depthShader) {
+	glCullFace(GL_FRONT);
 	for (int i = 0; i < renderComponents.size(); i++) {
 		if (renderComponents[i]->enabled) {
 			((MeshRenderer*)renderComponents[i])->Draw(depthShader);
 		}
 	}
+	glCullFace(GL_BACK);
 }

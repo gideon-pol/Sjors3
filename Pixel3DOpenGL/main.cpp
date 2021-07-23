@@ -52,8 +52,8 @@ GLuint indices[] =
 	4,6,7
 };
 
-const int ShadowWidth = 1000;
-const int ShadowHeight = 1000;
+const int ShadowWidth = 1024;
+const int ShadowHeight = 1024;
 
 float baseCamSpeed = 0.1f;
 float camSpeed = 0.1f;
@@ -125,7 +125,7 @@ int main() {
 	mrenderer2->SetMesh(mesh2);
 	mrenderer2->shader = shader;
 
-	glm::vec3 lightPos = glm::vec3(1, 1, 1);
+	glm::vec3 lightPos = glm::vec3(3, 3, 0);
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -191,24 +191,23 @@ int main() {
 		//obj.position.x = sin((double)now / 10000000);
 		//obj.rotation.y = (double)now / 200000;
 
-		shader.SetVec3Parameter("lightPos", glm::vec3(0));
-		shader.SetFloatParameter("lightIntensity", 2);
-		shader.SetVec3Parameter("lightColor", glm::vec3(0.6, 1, 0));
-		shader.SetFloatParameter("ambientIntensity", 0.1);
-		shader.SetVec3Parameter("ambientColor", glm::vec3(0, 1, 0));
-		shader.SetVec3Parameter("objectColor", glm::vec3(1,1,1));
-		shader.SetVec3Parameter("viewPos", cam.position);
+		glm::mat4 lightProjection, lightView, lightSpaceMat;
+
+		float near = 0.01f, far = 10.0f;
+		lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near, far);
+		lightView = glm::lookAt(lightPos, glm::vec3(0), glm::vec3(0, 1, 0));
+		lightSpaceMat = lightProjection * lightView;
+		depthShader.Activate();
+		depthShader.SetMat4Parameter("lightSpaceMat", glm::value_ptr(lightSpaceMat));
 		
 		glViewport(0, 0, ShadowWidth, ShadowHeight);
 		FBO depthBuffer = FBO();
 		//depthBuffer.Unbind();
-		depthBuffer.GenenerateTexture(ShadowWidth, ShadowHeight, GL_DEPTH_ATTACHMENT, GL_DEPTH_COMPONENT, 2);
+		depthBuffer.GenenerateTexture(ShadowWidth, ShadowHeight, GL_DEPTH_ATTACHMENT, GL_DEPTH_COMPONENT, GL_CLAMP_TO_BORDER, 2);
 		//depthBuffer.GenenerateTexture(ShadowWidth, ShadowHeight, GL_COLOR_ATTACHMENT0, GL_RGBA, 1);
 
 		Renderer::Clear();
-		Renderer::DrawSceneShadowMap(lightPos);
-		//cam.CalculateVPMatrix();
-		//mrenderer2->Draw();
+		Renderer::DrawSceneShadowMap(depthShader);
 
 		depthBuffer.Unbind();
 		depthBuffer.Delete();
@@ -219,8 +218,20 @@ int main() {
 
 		//wknd.Bind();
 		Renderer::Clear();
-		Renderer::DrawQuad(quad);
-		//Renderer::DrawScene();
+		//Renderer::DrawQuad(quad);
+
+		shader.Activate();
+
+		shader.SetVec3Parameter("lightPos", lightPos);
+		shader.SetFloatParameter("lightIntensity", 2);
+		shader.SetVec3Parameter("lightColor", glm::vec3(0.6, 1, 0));
+		shader.SetFloatParameter("ambientIntensity", 0.1);
+		shader.SetVec3Parameter("ambientColor", glm::vec3(0, 1, 0));
+		shader.SetVec3Parameter("objectColor", glm::vec3(1));
+		shader.SetVec3Parameter("viewPos", cam.position);
+		shader.SetMat4Parameter("lightSpaceMat", glm::value_ptr(lightSpaceMat));
+
+		Renderer::DrawScene();
 
 		depthBuffer.DeleteTexture(-1);
 
