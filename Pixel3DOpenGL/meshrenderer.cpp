@@ -1,6 +1,6 @@
 #include <glm/glm.hpp>
-#include "renderer.h"
 #include "meshrenderer.h"
+#include "renderer.h"
 
 MeshRenderer::MeshRenderer() {
 	Renderer::AddRenderComponent(this);
@@ -46,10 +46,14 @@ void MeshRenderer::_Draw(Shader shader) {
 	model = glm::rotate(model, glm::radians<float>(object->rotation.x), glm::vec3(1.0f, 0, 0));
 	model = glm::rotate(model, glm::radians<float>(object->rotation.z), glm::vec3(0, 1.0f, 0));
 	glm::mat4 VP = Renderer::activeCamera->GetVPMatrix();
+	glm::mat4 V = Renderer::activeCamera->GetViewMatrix();
+	glm::mat4 P = Renderer::activeCamera->GetProjectionMatrix();
 	glm::mat4 MVP = VP * model;
 	shader.Activate();
 	shader.SetMat4Parameter("MVP", glm::value_ptr(MVP));
 	shader.SetMat4Parameter("model", glm::value_ptr(model));
+	shader.SetMat4Parameter("view", glm::value_ptr(V));
+	shader.SetMat4Parameter("proj", glm::value_ptr(P));
 
 	Renderer::Draw(_VAO, _mesh.GetSize(), shader);
 }

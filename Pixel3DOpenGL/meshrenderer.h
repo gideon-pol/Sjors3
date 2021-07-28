@@ -8,7 +8,7 @@
 #include "mesh.h"
 #include "component.h"
 
-class MeshRenderer : public Component {
+class MeshRenderer : public RenderComponent {
 private:
 	Mesh _mesh;
 	VAO _VAO;

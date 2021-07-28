@@ -28,13 +28,13 @@ public:
 
 	template<typename T>
 	static void AddRenderComponent(T* component) {
-		renderComponents.push_back((Component*)component);
+		renderComponents.push_back((RenderComponent*)component);
 	}
 
 	template<typename T>
 	static void RemoveRenderComponent(T* component) {
 		for (int i = 0; i < renderComponents.size(); i++) {
-			if (renderComponents[i] == (Component*)component) {
+			if (renderComponents[i] == (RenderComponent*)component) {
 				renderComponents.erase(std::next(renderComponents.begin(), i));
 				return;
 			}
@@ -42,7 +42,7 @@ public:
 	}
 
 private:
-	static std::vector<Component*> renderComponents;
+	static std::vector<RenderComponent*> renderComponents;
 };
 
 #endif#pragma once

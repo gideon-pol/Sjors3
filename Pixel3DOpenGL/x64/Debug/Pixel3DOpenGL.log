@@ -1,38 +1,46 @@
-﻿  FBO.cpp
-  main.cpp
-D:\Documents\andere dingen\repos\OpenGl-Game\Pixel3DOpenGL\main.cpp(61,69): warning C4244: 'argument': conversion from 'T' to 'int', possible loss of data
+﻿  main.cpp
+D:\Documents\andere dingen\repos\OpenGl-Game\Pixel3DOpenGL\main.cpp(40,69): warning C4244: 'argument': conversion from 'T' to 'int', possible loss of data
           with
           [
               T=float
           ]
-D:\Documents\andere dingen\repos\OpenGl-Game\Pixel3DOpenGL\main.cpp(61,45): warning C4244: 'argument': conversion from 'T' to 'int', possible loss of data
+D:\Documents\andere dingen\repos\OpenGl-Game\Pixel3DOpenGL\main.cpp(40,45): warning C4244: 'argument': conversion from 'T' to 'int', possible loss of data
           with
           [
               T=float
           ]
-D:\Documents\andere dingen\repos\OpenGl-Game\Pixel3DOpenGL\main.cpp(74,31): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-D:\Documents\andere dingen\repos\OpenGl-Game\Pixel3DOpenGL\main.cpp(89,84): warning C4244: 'argument': conversion from 'T' to 'int', possible loss of data
+D:\Documents\andere dingen\repos\OpenGl-Game\Pixel3DOpenGL\main.cpp(53,31): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+D:\Documents\andere dingen\repos\OpenGl-Game\Pixel3DOpenGL\main.cpp(68,84): warning C4244: 'argument': conversion from 'T' to 'int', possible loss of data
           with
           [
               T=float
           ]
-D:\Documents\andere dingen\repos\OpenGl-Game\Pixel3DOpenGL\main.cpp(89,60): warning C4244: 'argument': conversion from 'T' to 'int', possible loss of data
+D:\Documents\andere dingen\repos\OpenGl-Game\Pixel3DOpenGL\main.cpp(68,60): warning C4244: 'argument': conversion from 'T' to 'int', possible loss of data
           with
           [
               T=float
           ]
-D:\Documents\andere dingen\repos\OpenGl-Game\Pixel3DOpenGL\main.cpp(181,48): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-D:\Documents\andere dingen\repos\OpenGl-Game\Pixel3DOpenGL\main.cpp(182,63): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-D:\Documents\andere dingen\repos\OpenGl-Game\Pixel3DOpenGL\main.cpp(215,64): warning C4244: 'argument': conversion from 'T' to 'GLsizei', possible loss of data
+D:\Documents\andere dingen\repos\OpenGl-Game\Pixel3DOpenGL\main.cpp(174,48): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+D:\Documents\andere dingen\repos\OpenGl-Game\Pixel3DOpenGL\main.cpp(175,63): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+D:\Documents\andere dingen\repos\OpenGl-Game\Pixel3DOpenGL\main.cpp(202,64): warning C4244: 'argument': conversion from 'T' to 'GLsizei', possible loss of data
           with
           [
               T=float
           ]
-D:\Documents\andere dingen\repos\OpenGl-Game\Pixel3DOpenGL\main.cpp(215,40): warning C4244: 'argument': conversion from 'T' to 'GLsizei', possible loss of data
+D:\Documents\andere dingen\repos\OpenGl-Game\Pixel3DOpenGL\main.cpp(202,40): warning C4244: 'argument': conversion from 'T' to 'GLsizei', possible loss of data
           with
           [
               T=float
           ]
-D:\Documents\andere dingen\repos\OpenGl-Game\Pixel3DOpenGL\main.cpp(228,51): warning C4305: 'argument': truncation from 'double' to 'float'
-  Generating Code...
+D:\Documents\andere dingen\repos\OpenGl-Game\Pixel3DOpenGL\main.cpp(209,51): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\Documents\andere dingen\repos\OpenGl-Game\Pixel3DOpenGL\main.cpp(220,77): warning C4244: 'argument': conversion from 'T' to 'int', possible loss of data
+          with
+          [
+              T=float
+          ]
+D:\Documents\andere dingen\repos\OpenGl-Game\Pixel3DOpenGL\main.cpp(220,53): warning C4244: 'argument': conversion from 'T' to 'int', possible loss of data
+          with
+          [
+              T=float
+          ]
   Pixel3DOpenGL.vcxproj -> D:\Documents\andere dingen\repos\OpenGl-Game\x64\Debug\Pixel3DOpenGL.exe

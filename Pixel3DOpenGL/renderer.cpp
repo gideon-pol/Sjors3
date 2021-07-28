@@ -2,7 +2,7 @@
 
 glm::vec2 Renderer::resolution = glm::vec2(1000);
 Camera* Renderer::activeCamera = NULL;
-std::vector<Component*> Renderer::renderComponents = {};
+std::vector<RenderComponent*> Renderer::renderComponents = {};
 
 std::vector<Vertex> quad = {
 	Vertex {glm::vec3(-1, -1, 0), glm::vec3(0), glm::vec2(0)}, // bottom left
@@ -27,11 +27,10 @@ void Renderer::Init() {
 	quadVAO.LinkAttribute(quadVBO, 2, 2, GL_FLOAT, 8 * sizeof(float), (GLvoid*)(6 * sizeof(float)));
 	quadVAO.Unbind();
 	quadVBO.Unbind();
-
 }
 
 void Renderer::Clear() {
-	glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
+	glClearColor(0.1,0.1,0.1, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
@@ -62,11 +61,12 @@ void Renderer::DrawScene() {
 }
 
 void Renderer::DrawSceneShadowMap(Shader depthShader) {
-	glCullFace(GL_FRONT);
+	//glEnable(GL_CULL_FACE);
+	//glCullFace(GL_CW);
 	for (int i = 0; i < renderComponents.size(); i++) {
-		if (renderComponents[i]->enabled) {
+		if (renderComponents[i]->enabled && renderComponents[i]->castShadows) {
 			((MeshRenderer*)renderComponents[i])->Draw(depthShader);
-		}
+	 	}
 	}
-	glCullFace(GL_BACK);
+	//glCullFace(GL_BACK);
 }

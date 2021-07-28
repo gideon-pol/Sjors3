@@ -187,6 +187,7 @@
     <None Include="default.vert" />
     <None Include="depth.shader" />
     <None Include="diffuse.shader" />
+    <None Include="diffuse2.shader" />
     <None Include="pixel.frag" />
     <None Include="pixel.vert" />
     <None Include="quad.shader" />

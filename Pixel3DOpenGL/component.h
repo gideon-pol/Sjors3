@@ -15,4 +15,9 @@ public:
 	virtual ~Component() { };
 };
 
+class RenderComponent : public Component {
+public:
+	bool castShadows = true;
+};
+
 #endif

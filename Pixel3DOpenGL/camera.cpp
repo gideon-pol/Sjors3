@@ -13,13 +13,13 @@ glm::mat4 Camera::GetViewMatrix() {
 	view = glm::rotate(view, glm::radians<float>(rotation.y), glm::vec3(0, 0, 1.0f));
 	view = glm::rotate(view, glm::radians<float>(rotation.x), glm::vec3(1.0f, 0, 0));
 	view = glm::rotate(view, glm::radians<float>(rotation.z), glm::vec3(0, 1.0f, 0));
-	view = glm::translate(view, position);
+	view = glm::translate(view, -position);
 	// now get the view matrix by taking the camera inverse
 	return view;
 }
 
 glm::mat4 Camera::GetProjectionMatrix() {
-	return glm::perspective(glm::radians(Fov), (float)(Width / Height), 0.1f, 100.0f);
+	return glm::perspective(glm::radians(Fov), (float)(Width / Height), 0.1f, 1000.0f);
 }
 
 glm::mat4 Camera::CalculateVPMatrix() {
@@ -32,15 +32,15 @@ glm::mat4 Camera::GetVPMatrix() {
 }
 
 glm::vec3 Camera::GetForward() {
-	return glm::vec3(glm::inverse(GetViewMatrix())[2]);//normalize(glm::vec3(GetViewMatrix()[2]))* glm::vec3(1, 1, -1);
+	return -glm::vec3(glm::inverse(GetViewMatrix())[2]);//normalize(glm::vec3(GetViewMatrix()[2]))* glm::vec3(1, 1, -1);
 }
 
 glm::vec3 Camera::GetUp() {
-	return glm::vec3(glm::inverse(GetViewMatrix())[1]);
+	return -glm::vec3(glm::inverse(GetViewMatrix())[1]);
 }
 
 glm::vec3 Camera::GetLeft() {
-	return glm::vec3(glm::inverse(GetViewMatrix())[0]);
+	return -glm::vec3(glm::inverse(GetViewMatrix())[0]);
 }
 
 void Camera::SetShaderMatrices(Shader &shader) {

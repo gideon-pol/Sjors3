@@ -45,7 +45,7 @@ static Mesh loadObj(const char* fileName) {
 
             std::istringstream v(line.substr(3));
             glm::vec2 tex;
-            int U, V;
+            double U, V;
             v >> U;
             v >> V;
             tex = glm::vec2(U, V);

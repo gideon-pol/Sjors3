@@ -16,44 +16,23 @@
 #include "FBO.h"
 #include "texture.h"
 #include "camera.h"
+#include "mesh.h"
 #include "renderer.h"
 #include "OBJloader.h"
 #include "meshrenderer.h"
 
-GLfloat vertices[] =
-{ //     COORDINATES     /      TexCoord  //
-	-1.0f, -1.0f,  0.0f,     0.0f, 0.0f, 0,
-	 1.0f, -1.0f,  0.0f,     1.0f, 0.0f, 0,
-	 1.0f,  1.0f,  0.0f,     1.0f, 1.0f, 0,
-	 -1.0f, 1.0f,  0.0f,     0.0f, 1.0f, 0,
+std::vector<Vertex> quadMesh = {
+	Vertex {glm::vec3(-1, 0,-1), glm::vec3(0, 1, 0), glm::vec2(0)}, // bottom left
+	Vertex {glm::vec3( 1, 0,-1), glm::vec3(0, 1, 0), glm::vec2(1, 0)}, // bottom right
+	Vertex {glm::vec3(-1, 0, 1), glm::vec3(0, 1, 0), glm::vec2(0, 1)}, // top left
 
-	 -1.0f, -1.0f,  0.0f,     0.0f, 0.0f, 0,
-	 1.0f, -1.0f,  0.0f,      1.0f, 0.0f, 0,
-	 1.0f,  -1.0f,  2.0f,     1.0f, 1.0f, 0,
-	 -1.0f, -1.0f,  2.0f,     0.0f, 1.0f, 0,
+	Vertex {glm::vec3( 1, 0,-1), glm::vec3(0, 1, 0), glm::vec2(1, 0)},
+	Vertex {glm::vec3( 1, 0, 1), glm::vec3(0, 1, 0), glm::vec2(1)}, // top right
+	Vertex {glm::vec3(-1, 0, 1), glm::vec3(0, 1, 0), glm::vec2(0, 1)}
 };
 
-GLfloat plane[] =
-{
-	1, 0, 1,	0, 1, 0,	1, 0,
-	-1, 0, -1,	 0, 1, 0,	0, 0,
-	-1, 0, 1,	0, 1, 0,	0, 0,
-	1, 0, 1,	0, 1, 0,	1, 0,
-	1, 0, -1,	0, 1, 0,	1, 0,
-	-1, 0, -1,	0, 1, 0,	0, 0,
-
-};
-
-GLuint indices[] =
-{
-	0, 1, 2,
-	0, 2, 3,
-	4,5,6,
-	4,6,7
-};
-
-const int ShadowWidth = 1024;
-const int ShadowHeight = 1024;
+const int ShadowWidth = 4096;
+const int ShadowHeight = 4096;
 
 float baseCamSpeed = 0.1f;
 float camSpeed = 0.1f;
@@ -100,34 +79,48 @@ int main() {
 
 	glViewport(0, 0, 1000, 1000);
 
-	//Shader def = Shader("default.vert", "default.frag");
 	Shader shader = Shader("diffuse.shader");
 	Shader quad = Shader("quad.shader");
-	std::cout << "Shader error: " << glGetError() << std::endl;
 	Shader depthShader = Shader("depth.shader");
-	//Shader pixel = Shader("pixel.vert", "pixel.frag");
+	Shader pixel = Shader("pixel.vert", "pixel.frag");
 
 	Texture wknd = Texture("weeknd.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
+	Texture testtex = Texture("testtex.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
+	Texture normalMap = Texture("weeknd.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
 	
 	Renderer::Init();
-	Renderer::activeCamera = &cam;
+	Renderer:: activeCamera = &cam;
 
-	Mesh mesh = loadObj("teapot.obj");
+	Mesh mesh = loadObj("highdefsphere.obj");
 	Object obj = Object();
+	obj.position = glm::vec3(0, 0, 0);
 	MeshRenderer* mrenderer = obj.AddComponent<MeshRenderer>();
 	mrenderer->SetMesh(mesh);
 	mrenderer->shader = shader;
 
-	Mesh mesh2 = loadObj("cone.obj");
+	Mesh mesh2 = loadObj("smallsphere.obj");
 	Object obj2 = Object();
-	obj2.position = glm::vec3(2, 2, 0);
+	obj2.position = glm::vec3(-2, 2, 0);
 	MeshRenderer* mrenderer2 = obj2.AddComponent<MeshRenderer>();
 	mrenderer2->SetMesh(mesh2);
 	mrenderer2->shader = shader;
+	mrenderer2->castShadows = false;
+	
+	Mesh mesh1 = loadObj("teapot.obj");
+	Object obj1 = Object();
+	obj1.position = glm::vec3(2, 2, 0);
+	MeshRenderer* mrenderer1 = obj1.AddComponent<MeshRenderer>();
+	mrenderer1->SetMesh(mesh1);
+	mrenderer1->shader = shader;
 
-	glm::vec3 lightPos = glm::vec3(3, 3, 0);
+	Mesh mesh3 = loadObj("solidplane.obj");
+	Object obj3 = Object();
+	obj3.position = glm::vec3(0, -1, 0);
+	MeshRenderer* mrenderer3 = obj3.AddComponent<MeshRenderer>();
+	mrenderer3->SetMesh(mesh3);
+	mrenderer3->shader = shader;
 
-	glEnable(GL_DEPTH_TEST);
+	glm::vec3 lightPos = glm::vec3(0, 0.5, 0);
 
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
 	glfwSetScrollCallback(window, scroll_callback);
@@ -181,59 +174,84 @@ int main() {
 		shader.SetFloatParameter("time", (double)now / 10000000);
 		shader.SetFloatParameter("deltaTime", (double)(now - start) / 10000000);
 
-		if (std::fmod((double)now / 10000000, 2) <= 1.0) {
-			//mrenderer->enabled = false;
-		}
-		else {
-			mrenderer->enabled = true;
-		}
+		lightPos = glm::vec3(cos((double)now / 10000000) * 3, 2, sin((double)now / 10000000) * 3);
 
-		//obj.position.x = sin((double)now / 10000000);
-		//obj.rotation.y = (double)now / 200000;
+		obj2.position = lightPos;
 
 		glm::mat4 lightProjection, lightView, lightSpaceMat;
 
-		float near = 0.01f, far = 10.0f;
-		lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near, far);
+		float near = 0.01f, far = 20.0f;
+		lightProjection = glm::ortho(-20.0f, 20.0f, -20.0f, 20.0f, near, far);
 		lightView = glm::lookAt(lightPos, glm::vec3(0), glm::vec3(0, 1, 0));
+		//lightView = glm::translate(lightView, cam.position);
 		lightSpaceMat = lightProjection * lightView;
 		depthShader.Activate();
 		depthShader.SetMat4Parameter("lightSpaceMat", glm::value_ptr(lightSpaceMat));
 		
 		glViewport(0, 0, ShadowWidth, ShadowHeight);
 		FBO depthBuffer = FBO();
-		//depthBuffer.Unbind();
-		depthBuffer.GenenerateTexture(ShadowWidth, ShadowHeight, GL_DEPTH_ATTACHMENT, GL_DEPTH_COMPONENT, GL_CLAMP_TO_BORDER, 2);
-		//depthBuffer.GenenerateTexture(ShadowWidth, ShadowHeight, GL_COLOR_ATTACHMENT0, GL_RGBA, 1);
+		depthBuffer.GenenerateTexture(ShadowWidth, ShadowWidth, GL_DEPTH_ATTACHMENT, GL_DEPTH_COMPONENT, GL_FLOAT, GL_CLAMP_TO_BORDER, 1);
 
 		Renderer::Clear();
+		glEnable(GL_DEPTH_TEST);
 		Renderer::DrawSceneShadowMap(depthShader);
 
 		depthBuffer.Unbind();
 		depthBuffer.Delete();
-
+		
 		glViewport(0, 0, Renderer::resolution.x, Renderer::resolution.y);
-
-		depthBuffer.BindTexture(0);
-
-		//wknd.Bind();
-		Renderer::Clear();
-		//Renderer::DrawQuad(quad);
-
+		
 		shader.Activate();
 
 		shader.SetVec3Parameter("lightPos", lightPos);
-		shader.SetFloatParameter("lightIntensity", 2);
-		shader.SetVec3Parameter("lightColor", glm::vec3(0.6, 1, 0));
-		shader.SetFloatParameter("ambientIntensity", 0.1);
-		shader.SetVec3Parameter("ambientColor", glm::vec3(0, 1, 0));
+		shader.SetFloatParameter("lightIntensity", 1);
+		shader.SetVec3Parameter("lightColor", glm::vec3(1,1,1));
+		shader.SetFloatParameter("ambientIntensity", 0.2);
+		shader.SetVec3Parameter("ambientColor", glm::vec3(1, 1, 1));
 		shader.SetVec3Parameter("objectColor", glm::vec3(1));
 		shader.SetVec3Parameter("viewPos", cam.position);
 		shader.SetMat4Parameter("lightSpaceMat", glm::value_ptr(lightSpaceMat));
 
+		shader.SetIntParameter("diffuseMap", 0);
+		shader.SetIntParameter("normalMap", 1);
+		shader.SetIntParameter("shadowMap", 2);
+		
+		FBO pixelBuffer = FBO();
+		pixelBuffer.GenenerateTexture(Renderer::resolution.x, Renderer::resolution.y, GL_COLOR_ATTACHMENT0, GL_RGBA, GL_UNSIGNED_BYTE, GL_REPEAT, 1);
+		
+		unsigned int rbo;
+		glGenRenderbuffers(1, &rbo);
+		glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 1000, 1000);
+		glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+		//pixelBuffer.Unbind();
+
+		glActiveTexture(GL_TEXTURE0);
+		wknd.Bind();
+		glActiveTexture(GL_TEXTURE1);
+		normalMap.Bind();
+		glActiveTexture(GL_TEXTURE2);
+		depthBuffer.BindTexture(0);
+		
+		Renderer::Clear();
 		Renderer::DrawScene();
 
+		pixelBuffer.Unbind();
+		pixelBuffer.Delete();
+		GLuint rbos = { rbo };
+		glDeleteRenderbuffers(1, &rbos);
+		
+		glActiveTexture(GL_TEXTURE0);
+		pixelBuffer.BindTexture(0);
+
+		Renderer::Clear();
+		glDisable(GL_DEPTH_TEST);
+		Renderer::DrawQuad(pixel);
+
 		depthBuffer.DeleteTexture(-1);
+		pixelBuffer.DeleteTexture(-1);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
