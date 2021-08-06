@@ -8,12 +8,13 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/transform.hpp>
 #include <stb/stb_image.h>
-#include <OpenFBX/ofbx.h>
 #include "shader.h"
+#include "material.h"
 #include "VAO.h"
 #include "VBO.h"
 #include "EBO.h"
 #include "FBO.h"
+#include "RBO.h"
 #include "texture.h"
 #include "camera.h"
 #include "mesh.h"
@@ -89,36 +90,59 @@ int main() {
 	Texture normalMap = Texture("weeknd.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
 	
 	Renderer::Init();
-	Renderer:: activeCamera = &cam;
+	Renderer::activeCamera = &cam;
 
-	Mesh mesh = loadObj("highdefsphere.obj");
+	Mesh mesh = loadObj("smoothsphere.obj");
 	Object obj = Object();
 	obj.position = glm::vec3(0, 0, 0);
 	MeshRenderer* mrenderer = obj.AddComponent<MeshRenderer>();
 	mrenderer->SetMesh(mesh);
-	mrenderer->shader = shader;
+	Material mat = Material();
+	mat.SetShader(shader);
+	mat.SetVec3("lightPos", glm::vec3(1,1,0));
+	mat.SetVec3("objectColor", glm::vec3(1, 0, 0));
+	mat.SetFloat("specularIntensity", 1);
+	mat.SetFloat("ambientIntensity", 1);
+	mat.SetVec3("ambientColor", glm::vec3(1));
+	mat.SetFloat("lightIntensity", 1);
+	mat.SetVec3("lightColor", glm::vec3(1));
+	mrenderer->material = mat;
 
 	Mesh mesh2 = loadObj("smallsphere.obj");
 	Object obj2 = Object();
 	obj2.position = glm::vec3(-2, 2, 0);
 	MeshRenderer* mrenderer2 = obj2.AddComponent<MeshRenderer>();
 	mrenderer2->SetMesh(mesh2);
-	mrenderer2->shader = shader;
 	mrenderer2->castShadows = false;
+	Material mat2 = Material();
+	mat2.SetShader(shader);
+	mat2.SetVec3("objectColor", glm::vec3(0,1,0));
+	mrenderer2->material = mat2;
 	
 	Mesh mesh1 = loadObj("teapot.obj");
 	Object obj1 = Object();
 	obj1.position = glm::vec3(2, 2, 0);
 	MeshRenderer* mrenderer1 = obj1.AddComponent<MeshRenderer>();
+	Material matw = mat;
+	matw.SetVec3("objectColor", glm::vec3(1, 0, 1));
 	mrenderer1->SetMesh(mesh1);
-	mrenderer1->shader = shader;
+	mrenderer1->material = matw;
 
 	Mesh mesh3 = loadObj("solidplane.obj");
 	Object obj3 = Object();
 	obj3.position = glm::vec3(0, -1, 0);
 	MeshRenderer* mrenderer3 = obj3.AddComponent<MeshRenderer>();
 	mrenderer3->SetMesh(mesh3);
-	mrenderer3->shader = shader;
+	Material mat3 = Material();
+	mat3.SetShader(shader);
+	mat3.SetVec3("objectColor", glm::vec3(0, 0, 1));
+	mrenderer3->material = mat3;
+
+	Object light = Object();
+	Light* lightComp = light.AddComponent<Light>();
+
+	Object light2 = Object();
+	Light* lightComp2 = light2.AddComponent<Light>();
 
 	glm::vec3 lightPos = glm::vec3(0, 0.5, 0);
 
@@ -166,27 +190,14 @@ int main() {
 		if (glfwGetKey(window, GLFW_KEY_F)) {
 			cam.position += cam.GetUp() * camSpeed;
 		}
-		
-		shader.Activate();
 
 		long long now = _Query_perf_counter();
-
-		shader.SetFloatParameter("time", (double)now / 10000000);
-		shader.SetFloatParameter("deltaTime", (double)(now - start) / 10000000);
-
 		lightPos = glm::vec3(cos((double)now / 10000000) * 3, 2, sin((double)now / 10000000) * 3);
 
 		obj2.position = lightPos;
-
-		glm::mat4 lightProjection, lightView, lightSpaceMat;
-
-		float near = 0.01f, far = 20.0f;
-		lightProjection = glm::ortho(-20.0f, 20.0f, -20.0f, 20.0f, near, far);
-		lightView = glm::lookAt(lightPos, glm::vec3(0), glm::vec3(0, 1, 0));
-		//lightView = glm::translate(lightView, cam.position);
-		lightSpaceMat = lightProjection * lightView;
-		depthShader.Activate();
-		depthShader.SetMat4Parameter("lightSpaceMat", glm::value_ptr(lightSpaceMat));
+		light.position = lightPos;
+		light2.position = glm::vec3(cos((double)now / 10000000 + 3.14) * 3, 2, sin((double)now / 10000000 + 3.14) * 3);
+		//obj.position += glm::vec3(0.1, 0, 0);
 		
 		glViewport(0, 0, ShadowWidth, ShadowHeight);
 		FBO depthBuffer = FBO();
@@ -194,45 +205,50 @@ int main() {
 
 		Renderer::Clear();
 		glEnable(GL_DEPTH_TEST);
-		Renderer::DrawSceneShadowMap(depthShader);
+		//Renderer::DrawSceneShadowMap(lightComp, depthShader);
 
 		depthBuffer.Unbind();
 		depthBuffer.Delete();
-		
+
+		glActiveTexture(GL_TEXTURE0);
+		depthBuffer.BindTexture(0);
+
 		glViewport(0, 0, Renderer::resolution.x, Renderer::resolution.y);
-		
+
 		shader.Activate();
 
-		shader.SetVec3Parameter("lightPos", lightPos);
-		shader.SetFloatParameter("lightIntensity", 1);
-		shader.SetVec3Parameter("lightColor", glm::vec3(1,1,1));
-		shader.SetFloatParameter("ambientIntensity", 0.2);
-		shader.SetVec3Parameter("ambientColor", glm::vec3(1, 1, 1));
-		shader.SetVec3Parameter("objectColor", glm::vec3(1));
-		shader.SetVec3Parameter("viewPos", cam.position);
-		shader.SetMat4Parameter("lightSpaceMat", glm::value_ptr(lightSpaceMat));
+		shader.SetIntParameter("s_LightCount", (int)Renderer::lights.size());
 
+		for (int i = 0; i < (int)Renderer::lights.size(); i++) {
+			shader.SetVec3Parameter((std::stringstream()<<"s_Lights["<<i<<"].Direction").str(), Renderer::lights[i]->object->position);
+			shader.SetVec3Parameter((std::stringstream()<<"s_Lights["<<i<<"].Color").str(), Renderer::lights[i]->color);
+			shader.SetFloatParameter((std::stringstream()<<"s_Lights["<<i<<"].Intensity").str(), Renderer::lights[i]->intensity);
+			glm::mat4 lightSpaceMat = Renderer::lights[i]->GetProjectionMatrix() * Renderer::lights[i]->GetViewMatrix();
+			shader.SetMat4Parameter((std::stringstream()<<"s_Lights["<<i<<"].lightSpaceMat").str(), glm::value_ptr(lightSpaceMat));
+			shader.SetIntParameter((std::stringstream()<<"s_Lights["<<i<<"].shadowMap").str(), 5+i);
+		}
+		
+		shader.SetFloatParameter("s_AmbientIntensity", 0.2);
+		shader.SetVec3Parameter("s_AmbientColor", glm::vec3(1));
+		shader.SetVec3Parameter("s_ViewPos", cam.position);
+		shader.SetFloatParameter("s_Time", (double)now / 10000000);
+		shader.SetFloatParameter("s_DeltaTime", (double)(now - start) / 10000000);
 		shader.SetIntParameter("diffuseMap", 0);
 		shader.SetIntParameter("normalMap", 1);
-		shader.SetIntParameter("shadowMap", 2);
+		//shader.SetIntParameter("shadowMap", 2);
 		
 		FBO pixelBuffer = FBO();
 		pixelBuffer.GenenerateTexture(Renderer::resolution.x, Renderer::resolution.y, GL_COLOR_ATTACHMENT0, GL_RGBA, GL_UNSIGNED_BYTE, GL_REPEAT, 1);
 		
-		unsigned int rbo;
-		glGenRenderbuffers(1, &rbo);
-		glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 1000, 1000);
-		glBindRenderbuffer(GL_RENDERBUFFER, 0);
-
-		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
-		//pixelBuffer.Unbind();
+		RBO RBO1 = RBO(Renderer::resolution.x, Renderer::resolution.y);
+		RBO1.BindToFBO();
+		RBO1.Unbind();
 
 		glActiveTexture(GL_TEXTURE0);
 		wknd.Bind();
 		glActiveTexture(GL_TEXTURE1);
 		normalMap.Bind();
-		glActiveTexture(GL_TEXTURE2);
+		glActiveTexture(GL_TEXTURE5);
 		depthBuffer.BindTexture(0);
 		
 		Renderer::Clear();
@@ -240,8 +256,7 @@ int main() {
 
 		pixelBuffer.Unbind();
 		pixelBuffer.Delete();
-		GLuint rbos = { rbo };
-		glDeleteRenderbuffers(1, &rbos);
+		RBO1.Delete();
 		
 		glActiveTexture(GL_TEXTURE0);
 		pixelBuffer.BindTexture(0);

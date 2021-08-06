@@ -32,7 +32,7 @@ void MeshRenderer::SetMesh(Mesh mesh) {
 }
 
 void MeshRenderer::Draw() {
-	_Draw(shader);
+	_Draw(material.GetParameterizedShader());
 }
 
 void MeshRenderer::Draw(Shader shader) {

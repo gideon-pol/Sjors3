@@ -1,7 +1,6 @@
 #include "VAO.h"
 
-VAO::VAO(){
-}
+VAO::VAO(){}
 
 //Not very elegant
 void VAO::Init() {

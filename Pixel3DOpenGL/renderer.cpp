@@ -1,8 +1,10 @@
+#include <glm/glm.hpp>
 #include "renderer.h"
 
 glm::vec2 Renderer::resolution = glm::vec2(1000);
 Camera* Renderer::activeCamera = NULL;
 std::vector<RenderComponent*> Renderer::renderComponents = {};
+std::vector<Light*> Renderer::lights = {};
 
 std::vector<Vertex> quad = {
 	Vertex {glm::vec3(-1, -1, 0), glm::vec3(0), glm::vec2(0)}, // bottom left
@@ -53,6 +55,7 @@ void Renderer::DrawQuad(Shader shader) {
 
 void Renderer::DrawScene() {
 	activeCamera->CalculateVPMatrix();
+
 	for (int i = 0; i < renderComponents.size(); i++) {
 		if (renderComponents[i]->enabled) {
 			((MeshRenderer*)renderComponents[i])->Draw();
@@ -60,9 +63,11 @@ void Renderer::DrawScene() {
 	}
 }
 
-void Renderer::DrawSceneShadowMap(Shader depthShader) {
-	//glEnable(GL_CULL_FACE);
-	//glCullFace(GL_CW);
+void Renderer::DrawSceneShadowMap(Light* light, Shader depthShader) {
+	glm::mat4 lightSpaceMat = light->GetDirectionalLightMatrix();
+	depthShader.Activate();
+	depthShader.SetMat4Parameter("lightSpaceMat", glm::value_ptr(lightSpaceMat));
+
 	for (int i = 0; i < renderComponents.size(); i++) {
 		if (renderComponents[i]->enabled && renderComponents[i]->castShadows) {
 			((MeshRenderer*)renderComponents[i])->Draw(depthShader);

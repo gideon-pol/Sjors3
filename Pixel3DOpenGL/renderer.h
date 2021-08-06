@@ -12,6 +12,7 @@
 #include "shader.h"
 #include "ECS.h"
 #include "camera.h"
+#include "light.h"
 
 class Renderer {
 public:
@@ -24,7 +25,7 @@ public:
 	static void Draw(VAO VAO1, size_t count, Shader shader);
 	static void DrawQuad(Shader shader);
 	static void DrawScene();
-	static void DrawSceneShadowMap(Shader shader);
+	static void DrawSceneShadowMap(Light* light, Shader shader);
 
 	template<typename T>
 	static void AddRenderComponent(T* component) {
@@ -41,8 +42,23 @@ public:
 		}
 	}
 
+	static void AddLight(Light* light) {
+		lights.push_back(light);
+	}
+
+	static void RemoveLight(Light* light) {
+		for (int i = 0; i < lights.size(); i++) {
+			if (lights[i] == light) {
+				lights.erase(std::next(lights.begin(), i));
+			}
+		}
+	}
+
+	static std::vector<Light*> lights;
+
 private:
 	static std::vector<RenderComponent*> renderComponents;
+	
 };
 
 #endif#pragma once

@@ -28,7 +28,6 @@ public:
 	template<typename T>
 	void RemoveComponent() {
 		for (int i = 0; i < components.size(); i++) {
-			std::cout << "Hi" << std::endl;
 			if (components[i]->type == typeid(T)) {
 				delete components[i];
 				components.erase(std::next(components.begin(), i));

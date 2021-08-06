@@ -156,13 +156,17 @@
     <ClInclude Include="EBO.h" />
     <ClInclude Include="ECS.h" />
     <ClInclude Include="FBO.h" />
+    <ClInclude Include="light.h" />
+    <ClInclude Include="material.h" />
     <ClInclude Include="mesh.h" />
     <ClInclude Include="meshrenderer.h" />
     <ClInclude Include="object.h" />
     <ClInclude Include="OBJloader.h" />
+    <ClInclude Include="RBO.h" />
     <ClInclude Include="renderer.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="texture.h" />
+    <ClInclude Include="utils.h" />
     <ClInclude Include="VAO.h" />
     <ClInclude Include="VBO.h" />
   </ItemGroup>
@@ -172,9 +176,11 @@
     <ClCompile Include="EBO.cpp" />
     <ClCompile Include="ECS.cpp" />
     <ClCompile Include="FBO.cpp" />
+    <ClCompile Include="light.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="meshrenderer.cpp" />
     <ClCompile Include="object.cpp" />
+    <ClCompile Include="RBO.cpp" />
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="stb.cpp" />

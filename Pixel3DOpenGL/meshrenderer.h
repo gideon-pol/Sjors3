@@ -5,6 +5,7 @@
 #include "VAO.h"
 #include "EBO.h"
 #include "shader.h"
+#include "material.h"
 #include "mesh.h"
 #include "component.h"
 
@@ -17,7 +18,7 @@ private:
 	void _Draw(Shader shader);
 
 public:
-	Shader shader;
+	Material material;
 
 	MeshRenderer();
 	~MeshRenderer();
