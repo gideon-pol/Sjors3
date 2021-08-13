@@ -11,14 +11,14 @@ EBO::EBO(GLuint* indices, GLsizeiptr size) {
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, indices, GL_STATIC_DRAW);
 }
 
-EBO::EBO(Mesh mesh) {
+EBO::EBO(SubMesh sub) {
 	//Tell OpenGL ID should reference an index buffer
 	glGenBuffers(1, &ID);
 	//Bind the ID to the vertex array
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ID);
 
 	//Load data into buffer
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.indeces.size() * sizeof(int), mesh.indeces.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sub.indeces.size() * sizeof(int), sub.indeces.data(), GL_STATIC_DRAW);
 }
 
 void EBO::Bind() {

@@ -14,7 +14,7 @@ public:
 	size_t Size;
 
 	EBO(GLuint* indices, GLsizeiptr size);
-	EBO(Mesh mesh);
+	EBO(SubMesh sub);
 	EBO() {};
 
 	void Bind();

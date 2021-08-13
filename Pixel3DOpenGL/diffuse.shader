@@ -5,15 +5,14 @@ layout(location = 1) in vec3 aNormal;
 layout(location = 2) in vec2 aCoord;
 uniform float s_Time;
 
-struct DLight {
-	vec3 Direction;
+struct Light {
+	int Type;
+	vec3 Position;
 	vec3 Color;
 	float Intensity;
-	mat4 lightSpaceMat;
-	sampler2D shadowMap;
 };
 
-uniform DLight s_Lights[5];
+uniform Light s_Lights[5];
 
 uniform mat4 model;
 uniform mat4 view;
@@ -32,7 +31,7 @@ void main()
 	Normal = normalize(mat3(transpose(inverse(model))) * aNormal);//(model * vec4(aNormal, 1)).xyz;
 	//lightSpacePos[0] = s_LightSpaceMat * vec4(FragPos, 1);
 	for (int i = 0; i < 5; i++) {
-		lightSpacePos[i] = s_Lights[i].lightSpaceMat * vec4(FragPos, 1);
+		//lightSpacePos[i] = s_Lights[i].lightSpaceMat * vec4(FragPos, 1);
 	}
 	TexCoord = aCoord;
 	gl_Position = MVP * vec4(aPos, 1);
@@ -42,15 +41,14 @@ void main()
 #version 330 core
 out vec4 FragColor;
 
-struct DLight {
-	vec3 Direction;
+struct Light {
+	int Type;
+	vec3 Position;
 	vec3 Color;
 	float Intensity;
-	mat4 lightSpaceMat;
-	sampler2D shadowMap;
 };
 
-uniform DLight s_Lights[5];
+uniform Light s_Lights[5];
 uniform int s_LightCount;
 
 in vec4 gl_FragCoord;
@@ -107,40 +105,61 @@ void main()
 {
 	vec2 uv = (TexCoord - vec2(0.5)) * 2;
 	vec3 viewDir = normalize(s_ViewPos - FragPos);
+	FragColor = vec4(s_AmbientColor * s_AmbientIntensity * objectColor, 1);
+	vec4 texColor;
 
+	if (diffuseMapAssigned == 0) {
+		texColor = vec4(1);
+	}
+	else {
+		texColor = texture(diffuseMap, TexCoord);
+	}
+	
 	for (int i = 0; i < s_LightCount; i++) {
-		vec3 lightDir = normalize(s_Lights[i].Direction);// -FragPos);
-
-		float lightDist = length(lightDir);
+		vec3 lightDir;
+		if (s_Lights[i].Type == 0) {
+			lightDir = normalize(s_Lights[i].Position);// -FragPos);
+		}
+		else {
+			lightDir = normalize(s_Lights[i].Position - FragPos);
+		}
+		
 		float lightDotNorm = dot(Normal, lightDir);
-		float dif = s_Lights[i].Intensity * /*(1/pow(lightDist, 2)) */ max(lightDotNorm, 0);
-		vec3 diffuse = dif * s_Lights[i].Color;
-
-		vec3 ambient = s_AmbientColor * s_AmbientIntensity;
+		float dif = max(lightDotNorm, 0);
+		float lightDist = length(s_Lights[i].Position - FragPos);
 		
 		vec3 reflectDir = reflect(-lightDir, Normal);
 		float spec = pow(max(dot(viewDir, reflectDir), 0.0), 128) * specularIntensity;
-		vec3 specular = spec * s_Lights[i].Color;
 
 		float shadow = 1;//calc_shadow(lightDotNorm);
-		vec3 finalCol = (shadow * (diffuse + specular) + ambient) * s_Lights[i].Color * objectColor;
 
-		vec3 texCol = texture(diffuseMap, TexCoord).xyz;
+		float brightness = shadow * (spec + dif) * s_Lights[i].Intensity;
 
-		float brightness = shadow * (spec + dif) + s_AmbientIntensity;
-
-		if (brightness <= 0.2) {
-			FragColor += vec4(s_Lights[i].Color * objectColor * 0.4, 1);
+		switch (s_Lights[i].Type) {
+			case 0:
+				if (s_Lights[i].Intensity <= 0.00005) {
+					//continue;
+				}
+				break;
+			case 1:
+				brightness *= (1 / pow(lightDist, 2));
+				if (brightness <= 0.005) {
+					continue;
+				}
 		}
-		else if (brightness <= 0.95) {
-			FragColor += vec4(s_Lights[i].Color * objectColor * 0.6, 1);
+
+		if (brightness <= 0.05) {
+			FragColor.xyz += s_Lights[i].Color * objectColor * texColor.xyz;
+		}
+		else if (brightness <= 0.65) {
+			FragColor.xyz += s_Lights[i].Color * objectColor * 4 * texColor.xyz;
 		}
 		else {
-			FragColor += vec4(s_Lights[i].Color * objectColor * 0.8, 1);
+			FragColor.xyz += s_Lights[i].Color * objectColor * 8 * texColor.xyz;
 		}
 
-		if (spec * shadow >= 0.1) {
-			FragColor.xyz += s_Lights[i].Color;
+		if (spec * shadow * s_Lights[i].Intensity >= 0.01) {
+			FragColor.xyz = s_Lights[i].Color * 10 * pow(specularIntensity, 2) + max(1 - specularIntensity, 0) * FragColor.xyz * 3;
 		}
 	}
 }

@@ -14,7 +14,7 @@ std::string get_file_contents(const char* filename)
 		in.seekg(0, std::ios::beg);
 		in.read(&contents[0], contents.size());
 		in.close();
-		std::cout << contents << std::endl;
+		//std::cout << contents << std::endl;
 		return(contents);
 	}
 	throw(errno);
@@ -51,6 +51,16 @@ Shader::Shader(const char* shaderFile) {
 		}
 		else {
 			streams[(int)type] << line << std::endl;
+
+			if (line.substr(0, 18) == "uniform sampler2D ") {
+				std::string varName;
+				for (int i = 18; i < line.length(); i++) {
+					if (line[i] == ';') break;
+					varName += line[i];
+				}
+
+				streams[(int)type] << "uniform int " << varName << "Assigned = 0;" << std::endl;
+			}
 		}
 	}
 
@@ -82,20 +92,20 @@ void Shader::_CreateShader(const char* vertexSource, const char* fragSource) {
 		GLint size; // size of the variable
 		GLenum type; // type of the variable (float, vec3 or mat4, etc)
 
-		const GLsizei bufSize = 32; // maximum name length
-		GLchar name[bufSize]; // variable name in GLSL
-		GLsizei length; // name length
+		const GLsizei bufSize = 32; // maximum parameter length
+		GLchar parameter[bufSize]; // variable parameter in GLSL
+		GLsizei length; // parameter length
 
 		glGetProgramiv(ID, GL_ACTIVE_UNIFORMS, &count);
-		printf("Active Uniforms: %d\n", count);
+		printf("\nActive Uniforms: %d\n", count);
 
 		for (int i = 0; i < count; i++)
 		{
-			glGetActiveUniform(ID, (GLuint)i, bufSize, &length, &size, &type, name);
-			std::string uniform = std::string(name, length);
+			glGetActiveUniform(ID, (GLuint)i, bufSize, &length, &size, &type, parameter);
+			std::string uniform = std::string(parameter, length);
 			GLint uniformLocation = glGetUniformLocation(ID, uniform.c_str());
 			_uniforms.emplace(uniform, std::make_pair(type, uniformLocation));
-			printf("Uniform #%d Type: %u Name: %s\n", i, type, name);
+			printf("Uniform #%d Type: %u Name: %s\n", i, type, parameter);
 		}
 
 		//std::cout << "GL_INT: " << GL_INT << " GL_FLOAT: " << GL_FLOAT << " GL_VEC3: " << GL_FLOAT_VEC3 << " GL_MAT4: " << GL_FLOAT_MAT4 << std::endl;
@@ -109,33 +119,33 @@ void Shader::Activate() {
 	glUseProgram(ID);
 }
 
-void Shader::SetFloatParameter(std::string name, float value) {
-	if (_uniforms.find(name) != _uniforms.end()) {
-		glUniform1f(_uniforms[name].second, value);
+void Shader::SetFloatParameter(std::string parameter, float value) {
+	if (_uniforms.find(parameter) != _uniforms.end()) {
+		glUniform1f(_uniforms[parameter].second, value);
 	}
 }
 
-void Shader::SetIntParameter(std::string name, int value) {
-	if (_uniforms.find(name) != _uniforms.end()) {
-		glUniform1i(_uniforms[name].second, value);
+void Shader::SetIntParameter(std::string parameter, int value) {
+	if (_uniforms.find(parameter) != _uniforms.end()) {
+		glUniform1i(_uniforms[parameter].second, value);
 	}
 }
 
-void Shader::SetMat4Parameter(std::string name, glm::f32* value) {
-	if (_uniforms.find(name) != _uniforms.end()) {
-		glUniformMatrix4fv(_uniforms[name].second, 1, GL_FALSE, value);
+void Shader::SetMat4Parameter(std::string parameter, glm::f32* value) {
+	if (_uniforms.find(parameter) != _uniforms.end()) {
+		glUniformMatrix4fv(_uniforms[parameter].second, 1, GL_FALSE, value);
 	}
 }
 
-void Shader::SetVec2Parameter(std::string name, glm::vec2 value) {
-	if (_uniforms.find(name) != _uniforms.end()) {
-		glUniform2fv(_uniforms[name].second, 1, (GLfloat*)&value);
+void Shader::SetVec2Parameter(std::string parameter, glm::vec2 value) {
+	if (_uniforms.find(parameter) != _uniforms.end()) {
+		glUniform2fv(_uniforms[parameter].second, 1, (GLfloat*)&value);
 	}
 }
 
-void Shader::SetVec3Parameter(std::string name, glm::vec3 value) {
-	if (_uniforms.find(name) != _uniforms.end()) {
-		glUniform3fv(_uniforms[name].second, 1, (GLfloat*)&value);
+void Shader::SetVec3Parameter(std::string parameter, glm::vec3 value) {
+	if (_uniforms.find(parameter) != _uniforms.end()) {
+		glUniform3fv(_uniforms[parameter].second, 1, (GLfloat*)&value);
 	}
 }
 

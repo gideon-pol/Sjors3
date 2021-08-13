@@ -6,9 +6,31 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include "Core.h"
 #include "mesh.h"
 
-static Mesh loadObj(const char* fileName) {
+SubMesh getSubMesh(std::vector<glm::vec3>* vertsPos, std::vector<glm::vec3>* vertsNormals, std::vector<glm::vec2>* texCoords, std::vector<int>* faceIndeces, std::vector<int>* texIndeces, std::vector<int>* nrmIndeces) {
+    SubMesh sub = SubMesh();
+
+    for (unsigned int i = 0; i < faceIndeces->size(); i++)
+    {
+        glm::vec3 vertexPos = vertsPos->at(faceIndeces->at(i));
+        glm::vec3 vertexNormal = vertsNormals->at(nrmIndeces->at(i));
+        glm::vec2 texCoord = texCoords->at(texIndeces->at(i));
+
+        Vertex vert = { vertexPos, vertexNormal, texCoord };
+        sub.vertices.push_back(vert);
+        //std::cout << /*"Vertex position: " <<*/ vertexPos.x << ", " << vertexPos.y << ", " << vertexPos.z << ", " /*" Vertex normal: "*/ << vertexNormal.x << ", " << vertexNormal.y << ", " << vertexNormal.z << ", "/*" UV: "*/ << texCoord.x << ", " << texCoord.y << std::endl;
+    }
+
+    faceIndeces->clear();
+    nrmIndeces->clear();
+    texIndeces->clear();
+
+    return sub;
+}
+
+static Ref<Mesh> loadObj(const char* fileName) {
     std::vector<glm::vec3> vertsPos;
     std::vector<glm::vec3> vertsNormals;
     std::vector<glm::vec2> texCoords;
@@ -17,7 +39,8 @@ static Mesh loadObj(const char* fileName) {
     std::vector<int> texIndeces;
     std::vector<int> nrmIndeces;
 
-    Mesh mesh = Mesh();
+    Ref<Mesh> mesh = std::make_shared<Mesh>();
+    mesh->subMeshes.clear();
 
 	std::ifstream file(fileName, std::ios::in);
 
@@ -27,6 +50,7 @@ static Mesh loadObj(const char* fileName) {
     }
 
     std::string line;
+    int matGroupsFound = 0;
     while (std::getline(file, line))
     {
         //std::cout << "Line: " << line.substr(0, 2) << std::endl;
@@ -75,20 +99,21 @@ static Mesh loadObj(const char* fileName) {
             faceIndeces.push_back(faceInB);texIndeces.push_back(texInB);nrmIndeces.push_back(nrmInB);
             faceIndeces.push_back(faceInC);texIndeces.push_back(texInC);nrmIndeces.push_back(nrmInC);
         }
+        else if (line.substr(0, 7) == "usemtl ") {
+            matGroupsFound++;
+            if (matGroupsFound == 1) {
+                continue;
+            }
+
+            mesh->AddSubMesh(getSubMesh(&vertsPos, &vertsNormals, &texCoords, &faceIndeces, &texIndeces, &nrmIndeces));
+
+            std::cout << "Got a group! Size: " << mesh->subMeshes[mesh->subMeshes.size() - 1].GetSize() << std::endl;
+        }
     }
 
-    for (unsigned int i = 0; i < faceIndeces.size(); i++)
-    {
-        glm::vec3 vertexPos = vertsPos[faceIndeces[i]];
-        glm::vec3 vertexNormal = vertsNormals[nrmIndeces[i]];
-        glm::vec2 texCoord = texCoords[texIndeces[i]];
+    mesh->AddSubMesh(getSubMesh(&vertsPos, &vertsNormals, &texCoords, &faceIndeces, &texIndeces, &nrmIndeces));
 
-        Vertex vert = { vertexPos, vertexNormal, texCoord };
-        mesh.vertices.push_back(vert);
-        //std::cout << /*"Vertex position: " <<*/ vertexPos.x << ", " << vertexPos.y << ", " << vertexPos.z << ", " /*" Vertex normal: "*/ << vertexNormal.x << ", " << vertexNormal.y << ", " << vertexNormal.z << ", "/*" UV: "*/ << texCoord.x << ", " << texCoord.y << std::endl;
-    }
-
-    std::cout << "Vertices size: " << mesh.vertices.size() << std::endl;
+    std::cout << "Found " << matGroupsFound << " material groups" << std::endl;
 
     return mesh;
 }

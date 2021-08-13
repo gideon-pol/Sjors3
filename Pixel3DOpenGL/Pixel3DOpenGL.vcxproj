@@ -94,7 +94,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GLFW_INCLUDE_NONE</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
@@ -109,7 +109,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GLFW_INCLUDE_NONE</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
@@ -124,7 +124,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GLFW_INCLUDE_NONE</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
@@ -139,7 +139,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GLFW_INCLUDE_NONE</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
@@ -153,9 +153,11 @@
   <ItemGroup>
     <ClInclude Include="camera.h" />
     <ClInclude Include="component.h" />
+    <ClInclude Include="Core.h" />
     <ClInclude Include="EBO.h" />
     <ClInclude Include="ECS.h" />
     <ClInclude Include="FBO.h" />
+    <ClInclude Include="input.h" />
     <ClInclude Include="light.h" />
     <ClInclude Include="material.h" />
     <ClInclude Include="mesh.h" />
@@ -164,11 +166,13 @@
     <ClInclude Include="OBJloader.h" />
     <ClInclude Include="RBO.h" />
     <ClInclude Include="renderer.h" />
+    <ClInclude Include="rendering.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="VAO.h" />
     <ClInclude Include="VBO.h" />
+    <ClInclude Include="windowmanager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\glad.c" />
@@ -176,6 +180,7 @@
     <ClCompile Include="EBO.cpp" />
     <ClCompile Include="ECS.cpp" />
     <ClCompile Include="FBO.cpp" />
+    <ClCompile Include="input.cpp" />
     <ClCompile Include="light.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="meshrenderer.cpp" />
@@ -187,6 +192,7 @@
     <ClCompile Include="texture.cpp" />
     <ClCompile Include="VAO.cpp" />
     <ClCompile Include="VBO.cpp" />
+    <ClCompile Include="windowmanager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="default.frag" />

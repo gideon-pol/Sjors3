@@ -9,14 +9,14 @@ VBO::VBO(GLfloat* vertices, GLsizeiptr size) {
 	glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
 }
 
-VBO::VBO(Mesh mesh) {
+VBO::VBO(SubMesh* sub) {
 	//Tell OpenGL ID should reference a vertex data buffer
 	glGenBuffers(1, &ID);
 	//Bind the ID to the vertex array
 	glBindBuffer(GL_ARRAY_BUFFER, ID);
 	//Load data into buffer
-	std::cout << "Number of vertices: " << mesh.vertices.size() << std::endl;
-	glBufferData(GL_ARRAY_BUFFER, mesh.vertices.size() * sizeof(Vertex), mesh.vertices.data(), GL_STATIC_DRAW);
+	//std::cout << "Number of vertices: " << sub.vertices.size() << std::endl;
+	glBufferData(GL_ARRAY_BUFFER, sub->vertices.size() * sizeof(Vertex), sub->vertices.data(), GL_STATIC_DRAW);
 }
 
 void VBO::Bind() {

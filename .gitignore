@@ -1,4 +1,6 @@
-.vs
+.vs/
+Pixel3DOpenGL/x64/
+x64/
 
 # Prerequisites
 *.d

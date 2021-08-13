@@ -17,6 +17,7 @@ class Shader {
 public:
 	GLuint ID = 0;
 
+	~Shader() { std::cout << "Shader destructor called" << std::endl; };
 	Shader() {};
 	Shader(const char* vertexFile, const char* fragFile);
 	Shader(const char* shaderFile);

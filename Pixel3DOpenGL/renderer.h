@@ -21,32 +21,32 @@ public:
 
 	static void Init();
 	static void Clear();
-	static void Draw(VAO VAO1, EBO EBO1, Shader shader);
-	static void Draw(VAO VAO1, size_t count, Shader shader);
-	static void DrawQuad(Shader shader);
+	static void Draw(VAO VAO1, EBO EBO1);
+	static void Draw(VAO VAO1, size_t count);
+	static void DrawQuad(Ref<Shader> shader);
 	static void DrawScene();
-	static void DrawSceneShadowMap(Light* light, Shader shader);
+	static void DrawSceneShadowMap(Ref<Light> light, Ref<Shader> shader);
 
 	template<typename T>
-	static void AddRenderComponent(T* component) {
-		renderComponents.push_back((RenderComponent*)component);
+	static void AddRenderComponent(Ref<T> component) {
+		renderComponents.push_back(component);
 	}
 
 	template<typename T>
-	static void RemoveRenderComponent(T* component) {
+	static void RemoveRenderComponent(Ref<T> component) {
 		for (int i = 0; i < renderComponents.size(); i++) {
-			if (renderComponents[i] == (RenderComponent*)component) {
+			if (renderComponents[i] == component) {
 				renderComponents.erase(std::next(renderComponents.begin(), i));
 				return;
 			}
 		}
 	}
 
-	static void AddLight(Light* light) {
+	static void AddLight(Ref<Light> light) {
 		lights.push_back(light);
 	}
 
-	static void RemoveLight(Light* light) {
+	static void RemoveLight(Ref<Light> light) {
 		for (int i = 0; i < lights.size(); i++) {
 			if (lights[i] == light) {
 				lights.erase(std::next(lights.begin(), i));
@@ -54,10 +54,10 @@ public:
 		}
 	}
 
-	static std::vector<Light*> lights;
+	static std::vector<Ref<Light>> lights;
 
 private:
-	static std::vector<RenderComponent*> renderComponents;
+	static std::vector<Ref<RenderComponent>> renderComponents;
 	
 };
 

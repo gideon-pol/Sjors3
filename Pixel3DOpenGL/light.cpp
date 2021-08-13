@@ -1,12 +1,18 @@
 #include "light.h"
 #include "renderer.h"
 
-Light::Light() {
-	Renderer::AddLight(this);
+Light::~Light() {
+	std::cout << "Light destructor called" << std::endl;
+	//Renderer::RemoveLight(this->shared_from_this());
 }
 
-Light::~Light() {
-	Renderer::RemoveLight(this);
+void Light::Init() {
+	Renderer::AddLight(this->shared_from_this());
+}
+
+void Destroy(Ref<Light> light) {
+	Renderer::RemoveLight(light);
+	light->object->RemoveComponent<Light>(light);
 }
 
 glm::mat4 Light::GetProjectionMatrix() {

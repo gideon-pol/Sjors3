@@ -36,11 +36,12 @@ void FBO::GenenerateTexture(int width, int height, GLenum slot, GLenum format, G
 	}
 }
 
+
 void FBO::GenenerateTexture2(int width, int height, GLenum slot, GLenum format, GLenum texType, GLenum wrapMode, int count) {
 	for (int i = 0; i < count; i++) {
 		glGenTextures(1, &TexID[i]);
 		glBindTexture(GL_TEXTURE_2D, TexID[i]);
-		/*glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, texType, NULL);
+		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, GL_RGBA, texType, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode);
@@ -51,7 +52,7 @@ void FBO::GenenerateTexture2(int width, int height, GLenum slot, GLenum format, 
 		}
 		glFramebufferTexture2D(
 			GL_FRAMEBUFFER, slot + i, GL_TEXTURE_2D, TexID[i], 0
-		);*/
+		);
 	}
 }
 

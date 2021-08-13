@@ -3,30 +3,33 @@
 #define MESHRENDERER_H
 
 #include "VAO.h"
+#include "VBO.h"
 #include "EBO.h"
 #include "shader.h"
 #include "material.h"
 #include "mesh.h"
 #include "component.h"
 
-class MeshRenderer : public RenderComponent {
+class MeshRenderer : public RenderComponent, public std::enable_shared_from_this<MeshRenderer> {
 private:
-	Mesh _mesh;
-	VAO _VAO;
+	Ref<Mesh> _mesh;
+	VAO _VAOS[20];
 	EBO _EBO;
 
-	void _Draw(Shader shader);
+	void _Draw(Ref<Shader> shader);
 
 public:
-	Material material;
+	Ref<Material> materials[20];
 
 	MeshRenderer();
 	~MeshRenderer();
 
-	void SetMesh(Mesh mesh);
-	const Mesh& GetMesh() { return _mesh; }
+	void Init();
+
+	void SetMesh(Ref<Mesh> mesh);
+	const Ref<Mesh> GetMesh() { return _mesh; }
 	void Draw();
-	void Draw(Shader shader);
+	void Draw(Ref<Shader> shader);
 };
 
 #endif

@@ -2,7 +2,10 @@
 #ifndef COMPONENT_H
 #define COMPONENT_H
 
+#include <iostream>
 #include <typeindex>
+#include "Core.h"
+#include "shader.h"
 
 class Object;
 
@@ -13,11 +16,15 @@ public:
 	std::type_index type = typeid(Component);
 
 	virtual ~Component() { };
+	virtual void Init() {};
 };
 
 class RenderComponent : public Component {
 public:
 	bool castShadows = true;
+
+	virtual void Draw() { };
+	virtual void Draw(Ref<Shader>) { };
 };
 
 #endif
