@@ -10,3 +10,4 @@
 #include "camera.h"
 #include "mesh.h"
 #include "renderer.h"
+#include "postprocessing.h"

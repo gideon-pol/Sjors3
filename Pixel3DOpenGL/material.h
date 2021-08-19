@@ -132,11 +132,14 @@ public:
 						glActiveTexture(GL_TEXTURE0 + texIndex);
 						((Texture*)value)->Bind();
 						_shader->SetIntParameter(uniformName, texIndex);
-						*(int*)_parameters[uniformName + "Assigned"].first.get() = 1;
+						if (_parameters[uniformName + "Assigned"].first.get() != nullptr)
+							*(int*)_parameters[uniformName + "Assigned"].first.get() = 1;
 						texIndex++;
 					}
 					else {
-						*(int*)_parameters[uniformName + "Assigned"].first.get() = 0;
+						if (_parameters[uniformName + "Assigned"].first.get() != nullptr)
+							*(int*)_parameters[uniformName + "Assigned"].first.get() = 0;
+						glBindTexture(GL_TEXTURE_2D, 0);
 					}
 					break;
 			}

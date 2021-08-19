@@ -27,12 +27,14 @@ Shader::Shader(const char* vertexFile, const char* fragFile) {
 	const char* vertexSource = vertexCode.c_str();
 	const char* fragSource = fragCode.c_str();
 
-	_CreateShader(vertexCode.c_str(), fragCode.c_str());
+	_createShader(vertexCode.c_str(), fragCode.c_str());
 }
 
 Shader::Shader(const char* shaderFile) {
 	std::ifstream in(shaderFile, std::ios::binary);
+		
 	if (!in) {
+		std::cout << "Couldn't open shader file" << std::endl;
 		return;
 	}
 
@@ -60,25 +62,26 @@ Shader::Shader(const char* shaderFile) {
 				}
 
 				streams[(int)type] << "uniform int " << varName << "Assigned = 0;" << std::endl;
+				std::cout << "Sampler name: " << varName << std::endl;
 			}
 		}
 	}
 
-	_CreateShader(streams[0].str().c_str(), streams[1].str().c_str());
+	_createShader(streams[0].str().c_str(), streams[1].str().c_str());
 }
 
-void Shader::_CreateShader(const char* vertexSource, const char* fragSource) {
+void Shader::_createShader(const char* vertexSource, const char* fragSource) {
 	//Initialize and compile vertex shader
 	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertexShader, 1, &vertexSource, NULL);
 	glCompileShader(vertexShader);
-	_CheckCompile(ShaderType::VERTEX);
+	_checkCompile(ShaderType::VERTEX);
 
 	//Initialize and compile fragment shader
 	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragmentShader, 1, &fragSource, NULL);
 	glCompileShader(fragmentShader);
-	_CheckCompile(ShaderType::FRAGMENT);
+	_checkCompile(ShaderType::FRAGMENT);
 
 	//Make shaders executable for the GPU
 	ID = glCreateProgram();
@@ -86,7 +89,7 @@ void Shader::_CreateShader(const char* vertexSource, const char* fragSource) {
 	glAttachShader(ID, fragmentShader);
 
 	glLinkProgram(ID);
-	if (_CheckCompile(ShaderType::PROGRAM)) {
+	if (_checkCompile(ShaderType::PROGRAM)) {
 		GLint count;
 
 		GLint size; // size of the variable
@@ -97,7 +100,7 @@ void Shader::_CreateShader(const char* vertexSource, const char* fragSource) {
 		GLsizei length; // parameter length
 
 		glGetProgramiv(ID, GL_ACTIVE_UNIFORMS, &count);
-		printf("\nActive Uniforms: %d\n", count);
+		//printf("\nActive Uniforms: %d\n", count);
 
 		for (int i = 0; i < count; i++)
 		{
@@ -105,10 +108,8 @@ void Shader::_CreateShader(const char* vertexSource, const char* fragSource) {
 			std::string uniform = std::string(parameter, length);
 			GLint uniformLocation = glGetUniformLocation(ID, uniform.c_str());
 			_uniforms.emplace(uniform, std::make_pair(type, uniformLocation));
-			printf("Uniform #%d Type: %u Name: %s\n", i, type, parameter);
+			//printf("Uniform #%d Type: %u Name: %s\n", i, type, parameter);
 		}
-
-		//std::cout << "GL_INT: " << GL_INT << " GL_FLOAT: " << GL_FLOAT << " GL_VEC3: " << GL_FLOAT_VEC3 << " GL_MAT4: " << GL_FLOAT_MAT4 << std::endl;
 	}
 
 	glDeleteShader(vertexShader);
@@ -153,7 +154,7 @@ void Shader::Delete() {
 	glDeleteProgram(ID);
 }
 
-bool Shader::_CheckCompile(ShaderType shaderType) {
+bool Shader::_checkCompile(ShaderType shaderType) {
 	return true;
 	GLint successfullyCompiled;
 	char errMsg[1024];

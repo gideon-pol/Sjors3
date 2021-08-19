@@ -10,6 +10,7 @@
 #include <stb/stb_image.h>
 #include "Core.h"
 #include "rendering.h"
+#include "postprocessing.h"
 #include "OBJloader.h"
 #include "meshrenderer.h"
 #include "windowmanager.h"
@@ -18,14 +19,17 @@
 const int ShadowWidth = 4096;
 const int ShadowHeight = 4096;
 
-float baseCamSpeed = 0.1f;
-float camSpeed = 0.1f;
+float baseCamSpeed = 0.0075f;
+float camSpeed = 0.075f;
 
 Camera cam = Camera(70, Renderer::resolution.x, Renderer::resolution.y);
+
+long long oldTime;
 
 int main() {
 	cam.position = glm::vec3(0, 2, -1);
 	long long start = _Query_perf_counter();
+	oldTime = start;
 
 	glfwInit();
 
@@ -35,20 +39,22 @@ int main() {
 		return -1;
 	}
 
+	glfwSwapInterval(0);
 	gladLoadGL();
 
 	glViewport(0, 0, 1000, 1000);
 
-	Ref<Shader> shader(new Shader("diffuse.shader"));
-	Ref<Shader> quad(new Shader("quad.shader"));
-	Ref<Shader> depthShader(new Shader("depth.shader"));
-	Ref<Shader> pixel(new Shader("pixel.vert", "pixel.frag"));
+	Ref<Shader> shader(new Shader("assets/shaders/diffuse.shader"));
+	Ref<Shader> quad(new Shader("assets/shaders/quad.shader"));
+	Ref<Shader> depthShader(new Shader("assets/shaders/depth.shader"));
+	Ref<Shader> pixel(new Shader("assets/shaders/pixel.vert", "assets/shaders/pixel.frag"));
+	Ref<Shader> threshold(new Shader("bloomthreshold.shader"));
 
-	Ref<Texture> wknd(new Texture("weeknd.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE));
-	Texture testtex = Texture("testtex.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
-	Ref<Texture> housetexture(new Texture("housetexture.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE));
-	Ref<Texture> housetreetexture(new Texture("housetreetexture.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE));
-	Ref<Texture> housegroundtexture(new Texture("housegroundtexture.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE));
+	Ref<Texture> wknd(new Texture("assets/textures/weeknd.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE));
+	Ref<Texture> housetexture(new Texture("assets/textures/housetexture.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE));
+	Ref<Texture> housetreetexture(new Texture("assets/textures/housetreetexture.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE));
+	Ref<Texture> housegroundtexture(new Texture("assets/textures/housegroundtexture.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE));
+	Ref<Texture> normalMap(new Texture("assets/textures/normalmap2.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE));
 
 	Renderer::Init();
 	Renderer::activeCamera = &cam;
@@ -59,13 +65,14 @@ int main() {
 	Object obj = Object();
 	obj.position = glm::vec3(0, 0, 0);
 	Ref<MeshRenderer> mrenderer = obj.AddComponent<MeshRenderer>();
-	Ref<Mesh> mesh = loadObj("house.obj");
+	Ref<Mesh> mesh = loadObj("assets/house.obj");
 	mrenderer->SetMesh(mesh);
 	Ref<Material> mat(new Material());
 	mat->SetShader(shader);
 	mat->SetVec3("objectColor", glm::vec3(1));
 	mat->SetFloat("specularIntensity", 1);
 	mat->SetTexture("diffuseMap", housetexture);
+	mat->SetTexture("normalMap", normalMap);
 	Ref<Material> mathousetree(new Material(mat));
 	mathousetree->SetTexture("diffuseMap", housetreetexture);
 	mathousetree->SetFloat("specularIntensity", 0);
@@ -79,7 +86,7 @@ int main() {
 	std::cout << "Finished first object init" << std::endl;
 
 	std::cout << std::endl << "Starting second object init" << std::endl;
-	Ref<Mesh> smallSphere = loadObj("smallsphere.obj");
+	Ref<Mesh> smallSphere = loadObj("assets/smallsphere.obj");
 	Object objDir = Object();
 	objDir.position = glm::vec3(-2, 2, 0);
 	Ref<MeshRenderer> mrenderer2 = objDir.AddComponent<MeshRenderer>();
@@ -89,6 +96,7 @@ int main() {
 	mat2->SetShader(shader);
 	mat2->SetVec3("objectColor", glm::vec3(1));
 	mat2->SetTexture("diffuseMap", wknd);
+	mat2->SetVec3("emission", glm::vec3(2.5, 5, 10));
 	mrenderer2->materials[0] = mat2;
 	std::cout << "Finished second object init" << std::endl;
 
@@ -101,14 +109,16 @@ int main() {
 	matPoint->SetVec3("objectColor", glm::vec3(1));
 	mrendererPoint->materials[0] = matPoint;
 	std::cout << "Finished third object init" << std::endl;
-	
+
 	std::cout << std::endl << "Starting fourth object init" << std::endl;
-	Ref<Mesh> mesh1 = loadObj("teapot.obj");
+	Ref<Mesh> mesh1 = loadObj("assets/teapot.obj");
 	Object obj1 = Object();
 	obj1.position = glm::vec3(0, 5, 0);
 	Ref<MeshRenderer> mrenderer1 = obj1.AddComponent<MeshRenderer>();
 	Ref<Material> matw(new Material(mat));
 	matw->SetVec3("objectColor", glm::vec3(1));
+	matw->SetTexture("diffuseMap", housetexture);
+	matw->SetTexture("normalMap", normalMap);
 	mrenderer1->SetMesh(mesh1);
 	mrenderer1->materials[0] = matw;
 	std::cout << "Finished fourth object init" << std::endl;
@@ -124,34 +134,55 @@ int main() {
 	lightDir2->color = glm::vec3(0.5,0.5,1);
 	lightDir2->intensity = 0.25f;
 	lightDirObj2.position = glm::vec3(-1, 1, 0);
-
+		
 	Object light2 = Object();
 	Ref<Light> lightComp2 = light2.AddComponent<Light>();
-	lightComp2->color = glm::vec3(1,0,0);
+	lightComp2->color = glm::vec3(1,1,0);
 	lightComp2->type = LightType::Point;
 	lightComp2->intensity = 0.0f;
+
+	Ref<Bloom> bloomLayer = Ref<Bloom>(new Bloom());
+	bloomLayer->quality = 4;
+	Ref<Pixelate> pixelateLayer = Ref<Pixelate>(new Pixelate());
+	Ref<ColorGrading> colorGradingLayer = Ref<ColorGrading>(new ColorGrading());
+	colorGradingLayer->contrast = 1.75f;
+	colorGradingLayer->saturation = 1.5f;
+	colorGradingLayer->brightness = -0.6f;
+	//PostProcessing::AddLayer<Pixelate>(pixelateLayer);
+	PostProcessing::AddLayer<Bloom>(bloomLayer);
+	PostProcessing::AddLayer<ColorGrading>(colorGradingLayer);
+
+	FBO depthBuffer = FBO();
+	depthBuffer.GenenerateTexture(ShadowWidth, ShadowWidth, GL_DEPTH_ATTACHMENT, GL_DEPTH_COMPONENT, GL_FLOAT, GL_CLAMP_TO_BORDER, 1);
+
+	FBO pixelBuffer = FBO();
+	pixelBuffer.GenenerateTexture2(Renderer::resolution.x, Renderer::resolution.y, GL_COLOR_ATTACHMENT0, GL_RGBA16F, GL_FLOAT, GL_CLAMP_TO_EDGE, 1);
+
+	RBO RBO1 = RBO(Renderer::resolution.x, Renderer::resolution.y);
+	RBO1.BindToFBO();
+	RBO1.Unbind();
+
+	pixelBuffer.Unbind();
 
 	while (!WindowManager::Closing()) {
 		if (Input::GetMouseButtonDown(MOUSE_BUTTON_LEFT)) {
 			glfwSetInputMode(WindowManager::GetWindow(), GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 		}
 
-		std::cout << Input::GetMouseDelta().x << std::endl;
-
-		cam.rotation.z += Input::GetMouseDelta().x/10;
-		cam.rotation.x += Input::GetMouseDelta().y/10;
+		cam.rotation.z += Input::GetMouseDelta().x/20;
+		cam.rotation.x += Input::GetMouseDelta().y/20;
 
 		if (Input::GetKey(GLFW_KEY_L)) {
-			cam.rotation.z += 0.75f;
+			cam.rotation.z += 0.25f;
 		}
 		if (Input::GetKey(GLFW_KEY_J)) {
-			cam.rotation.z -= 0.75f;
+			cam.rotation.z -= 0.25f;
 		}
 		if (Input::GetKey(GLFW_KEY_K)) {
-			cam.rotation.x += 0.75f;
+			cam.rotation.x += 0.25f;
 		}
 		if (Input::GetKey(GLFW_KEY_I)) {
-			cam.rotation.x -= 0.75f;
+			cam.rotation.x -= 0.25f;
 		}
 
 		if (Input::GetKey(GLFW_KEY_LEFT_SHIFT)) {
@@ -180,8 +211,13 @@ int main() {
 			cam.position += cam.GetUp() * camSpeed;
 		}
 
+		if (Input::GetKey(GLFW_KEY_I)) {
+			pixel = Ref<Shader>(new Shader("assets/shaders/pixel.vert", "assets/shaders/pixel.frag"));
+		}
+
+		/*
 		if (Input::GetKey(GLFW_KEY_U)) {
-			shader = Ref<Shader>(new Shader("diffuse.shader"));
+			shader = Ref<Shader>(new Shader("assets/diffuse.shader"));
 			mathouseground->SetShader(shader);
 			mathouseground->SetVec3("objectColor", glm::vec3(1));
 			mathouseground->SetFloat("specularIntensity", 0.25);
@@ -200,35 +236,36 @@ int main() {
 			lightDir->color = glm::vec3(1);
 			lightDir2->color = glm::vec3(0.5, 0.5, 1);
 		}
+		*/
 
 		long long now = _Query_perf_counter();
+		long long delta = now - oldTime;
+		oldTime = now;
 
+		std::cout << "FPS: " << 1 / ((double)delta/10000000) << std::endl;
+
+		
 		objDir.position = glm::vec3(0, sin((double)now / 50000000) * 3, cos((double)now / 50000000) * 3);
-		lightDirObj.position = objDir.position;
-		lightDirObj2.position = -objDir.position;
+		lightDirObj.position = glm::vec3(0, sin((double)now / 50000000) * 3, cos((double)now / 50000000) * 3);
+		lightDirObj2.position = -glm::vec3(0, sin((double)now / 50000000) * 3, cos((double)now / 50000000) * 3);
 		lightDir->intensity = lightDirObj.position.y / 3;
 		lightDir2->intensity = lightDirObj2.position.y/3*0.25;
-		objPoint.position = glm::vec3(cos((double)now / 10000000 + 3.14) * 3, 2, sin((double)now / 10000000 + 3.14) * 3);
-		light2.position = objPoint.position;
+		//objPoint.position = glm::vec3(cos((double)now / 10000000 + 3.14) * 3, 2, sin((double)now / 10000000 + 3.14) * 3);
+		//light2.position = objPoint.position;
 		
+		//light2.position = objPoint.position;
 		glViewport(0, 0, ShadowWidth, ShadowHeight);
-		FBO depthBuffer = FBO();
-		depthBuffer.GenenerateTexture(ShadowWidth, ShadowWidth, GL_DEPTH_ATTACHMENT, GL_DEPTH_COMPONENT, GL_FLOAT, GL_CLAMP_TO_BORDER, 1);
 
-		Renderer::Clear();
+
+		depthBuffer.Bind();
 		glEnable(GL_DEPTH_TEST);
+		Renderer::Clear();	
 		//Renderer::DrawSceneShadowMap(lightComp, depthShader);
-
 		depthBuffer.Unbind();
-		depthBuffer.Delete();
-
-		glActiveTexture(GL_TEXTURE0);
-		depthBuffer.BindTexture(0);
 
 		glViewport(0, 0, Renderer::resolution.x, Renderer::resolution.y);
 
 		shader->Activate();
-
 		shader->SetIntParameter("s_LightCount", (int)Renderer::lights.size());
 
 		for (int i = 0; i < (int)Renderer::lights.size(); i++) {
@@ -243,37 +280,29 @@ int main() {
 		shader->SetVec3Parameter("s_ViewPos", cam.position);
 		shader->SetFloatParameter("s_Time", (double)now / 10000000);
 		shader->SetFloatParameter("s_DeltaTime", (double)(now - start) / 10000000);
-		
-		FBO pixelBuffer = FBO();
-		pixelBuffer.GenenerateTexture2(Renderer::resolution.x, Renderer::resolution.y, GL_COLOR_ATTACHMENT0, GL_RGBA16F, GL_FLOAT, GL_REPEAT, 1);
-		
-		RBO RBO1 = RBO(Renderer::resolution.x, Renderer::resolution.y);
-		RBO1.BindToFBO();
-		RBO1.Unbind();
 
 		glActiveTexture(GL_TEXTURE5);
-		depthBuffer.BindTexture(0);
-		
+		//depthBuffer.BindTexture(0); //ALWAYS BIND TEXTURE AFTER CREATION OF FRAMEBUFFER TEXTURES
+
+		pixelBuffer.Bind();
+		glEnable(GL_DEPTH_TEST);
 		Renderer::Clear();
 		Renderer::DrawScene();
-
 		pixelBuffer.Unbind();
-		pixelBuffer.Delete();
-		RBO1.Delete();
-		
+
+		Ref<Texture> tex(new Texture(pixelBuffer.TexID[0]));
+		Ref<Texture> bloomedTex = PostProcessing::Apply(tex);
+
+		quad->Activate();
+
 		glActiveTexture(GL_TEXTURE0);
-		pixelBuffer.BindTexture(0);
-		
-		pixel->Activate();
-		double exposure = cos((double)(now - start) / 10000000 / 5) * 0.3 + 0.4;
-		pixel->SetFloatParameter("exposure", 0.05);
+		bloomedTex->Bind();
 
 		Renderer::Clear();
 		glDisable(GL_DEPTH_TEST);
-		Renderer::DrawQuad(pixel);
+		Renderer::DrawQuad(quad);
 
-		depthBuffer.DeleteTexture(-1);
-		pixelBuffer.DeleteTexture(-1);
+		//bloomedTex->Delete();
 
 		WindowManager::Display();
 		Input::Poll();

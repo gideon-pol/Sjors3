@@ -17,6 +17,7 @@ bool WindowManager::CreateWindow(const char* windowName, glm::vec2 size) {
 	_size = size;
 	glfwMakeContextCurrent(_window);
 	glfwSetWindowFocusCallback(_window, _windowFocusCallback);
+	glfwFocusWindow(_window);
 	return true;
 }
 
@@ -46,5 +47,4 @@ void WindowManager::Destroy() {
 
 void WindowManager::_windowFocusCallback(GLFWwindow* window, int focused) {
 	_inFocus = focused;
-	std::cout << "Focus: " << focused << std::endl;
 }

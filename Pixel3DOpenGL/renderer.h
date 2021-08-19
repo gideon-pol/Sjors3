@@ -9,6 +9,7 @@
 #include <GLFW/glfw3.h>
 #include "VAO.h"
 #include "EBO.h"
+#include "FBO.h"
 #include "shader.h"
 #include "ECS.h"
 #include "camera.h"

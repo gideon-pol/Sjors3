@@ -11,13 +11,6 @@
 #include "component.h"
 
 class MeshRenderer : public RenderComponent, public std::enable_shared_from_this<MeshRenderer> {
-private:
-	Ref<Mesh> _mesh;
-	VAO _VAOS[20];
-	EBO _EBO;
-
-	void _Draw(Ref<Shader> shader);
-
 public:
 	Ref<Material> materials[20];
 
@@ -30,6 +23,12 @@ public:
 	const Ref<Mesh> GetMesh() { return _mesh; }
 	void Draw();
 	void Draw(Ref<Shader> shader);
+private:
+	Ref<Mesh> _mesh;
+	VAO _VAOS[20];
+	EBO _EBO;
+
+	void _draw(Ref<Shader> shader);
 };
 
 #endif

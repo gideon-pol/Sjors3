@@ -10,8 +10,8 @@ class Texture {
 public:
 	GLuint ID;
 
-	~Texture() { std::cout << "Texture destructor called" << std::endl; };
 	Texture(const char* image, GLenum texType, GLenum slot, GLenum format, GLenum type);
+	Texture(GLuint id);
 	void Bind();
 	void Unbind();
 	void Delete();

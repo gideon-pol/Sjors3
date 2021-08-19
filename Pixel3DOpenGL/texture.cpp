@@ -22,6 +22,10 @@ Texture::Texture(const char* image, GLenum texType, GLenum slot, GLenum format, 
 	stbi_image_free(bytes);
 }
 
+Texture::Texture(GLuint id) {
+	ID = id;
+}
+
 void Texture::Bind() {
 	glBindTexture(GL_TEXTURE_2D, ID);
 }

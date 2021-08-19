@@ -1,4 +1,5 @@
 #include <glm/glm.hpp>
+#include "RBO.h"
 #include "renderer.h"
 
 glm::vec2 Renderer::resolution = glm::vec2(1000);
@@ -24,15 +25,17 @@ void Renderer::Init() {
 	quadVAO = VAO();
 	quadVAO.Init();
 	quadVBO = VBO(quadMesh.GetSubMesh(0));
-	quadVAO.LinkAttribute(quadVBO, 0, 3, GL_FLOAT, 8 * sizeof(float), 0);
-	quadVAO.LinkAttribute(quadVBO, 1, 3, GL_FLOAT, 8 * sizeof(float), (GLvoid*)(3 * sizeof(float)));
-	quadVAO.LinkAttribute(quadVBO, 2, 2, GL_FLOAT, 8 * sizeof(float), (GLvoid*)(6 * sizeof(float)));
+	quadVAO.LinkAttribute(quadVBO, 0, 3, GL_FLOAT, 14 * sizeof(float), 0);
+	quadVAO.LinkAttribute(quadVBO, 1, 3, GL_FLOAT, 14 * sizeof(float), (GLvoid*)(3 * sizeof(float)));
+	quadVAO.LinkAttribute(quadVBO, 2, 2, GL_FLOAT, 14 * sizeof(float), (GLvoid*)(6 * sizeof(float)));
+	quadVAO.LinkAttribute(quadVBO, 3, 3, GL_FLOAT, 14 * sizeof(float), (GLvoid*)(8 * sizeof(float)));
+	quadVAO.LinkAttribute(quadVBO, 4, 3, GL_FLOAT, 14 * sizeof(float), (GLvoid*)(11 * sizeof(float)));
 	quadVAO.Unbind();
 	quadVBO.Unbind();
 }
 
 void Renderer::Clear() {
-	glClearColor(0.1, 0.1, 0.1, 1);
+	glClearColor(0.05, 0.75, 0.85, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
@@ -57,7 +60,6 @@ void Renderer::DrawScene() {
 	for (int i = 0; i < renderComponents.size(); i++) {
 		if (renderComponents[i]->enabled) {
 			renderComponents[i]->Draw();
-			
 		}
 	}
 }
@@ -70,7 +72,7 @@ void Renderer::DrawSceneShadowMap(Ref<Light> light, Ref<Shader> depthShader) {
 	for (int i = 0; i < renderComponents.size(); i++) {
 		if (renderComponents[i]->enabled && renderComponents[i]->castShadows) {
 			(renderComponents[i])->Draw(depthShader);
-	 	}
+		}
 	}
 	//glCullFace(GL_BACK);
 }

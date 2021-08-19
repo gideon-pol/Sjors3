@@ -164,6 +164,7 @@
     <ClInclude Include="meshrenderer.h" />
     <ClInclude Include="object.h" />
     <ClInclude Include="OBJloader.h" />
+    <ClInclude Include="postprocessing.h" />
     <ClInclude Include="RBO.h" />
     <ClInclude Include="renderer.h" />
     <ClInclude Include="rendering.h" />
@@ -185,6 +186,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="meshrenderer.cpp" />
     <ClCompile Include="object.cpp" />
+    <ClCompile Include="postprocessing.cpp" />
     <ClCompile Include="RBO.cpp" />
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="shader.cpp" />
@@ -195,16 +197,17 @@
     <ClCompile Include="windowmanager.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="default.frag" />
-    <None Include="default.vert" />
-    <None Include="depth.shader" />
-    <None Include="diffuse.shader" />
-    <None Include="diffuse2.shader" />
-    <None Include="pixel.frag" />
-    <None Include="pixel.vert" />
-    <None Include="quad.shader" />
-    <None Include="toon.frag" />
-    <None Include="toon.vert" />
+    <None Include="assets\shaders\diffuse.shader" />
+    <None Include="assets\shaders\pixel.frag" />
+    <None Include="assets\shaders\pixel.vert" />
+    <None Include="assets\shaders\quad.shader" />
+    <None Include="bloommix.shader" />
+    <None Include="bloom.shader" />
+    <None Include="colorgrading.shader" />
+    <None Include="pixelate.shader" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="bloomblur.shader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

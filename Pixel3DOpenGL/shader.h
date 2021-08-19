@@ -17,7 +17,6 @@ class Shader {
 public:
 	GLuint ID = 0;
 
-	~Shader() { std::cout << "Shader destructor called" << std::endl; };
 	Shader() {};
 	Shader(const char* vertexFile, const char* fragFile);
 	Shader(const char* shaderFile);
@@ -33,8 +32,8 @@ public:
 	std::map<std::string, GLenum> GetUniforms();
 
 private:
-	void _CreateShader(const char* vertexSource, const char* fragSource);
-	bool _CheckCompile(ShaderType shaderType);
+	void _createShader(const char* vertexSource, const char* fragSource);
+	bool _checkCompile(ShaderType shaderType);
 	std::map<std::string, std::pair<GLenum, GLint>> _uniforms;
 };
 

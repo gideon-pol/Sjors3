@@ -40,9 +40,11 @@ void MeshRenderer::SetMesh(Ref<Mesh> mesh) {
 		if ( _mesh->subMeshes[0].indeces.size() == 0) _EBO.Unbind();
 		//else _EBO = EBO(mesh);
 
-		_VAOS[i].LinkAttribute(VBO1, 0, 3, GL_FLOAT, 8 * sizeof(float), 0);
-		_VAOS[i].LinkAttribute(VBO1, 1, 3, GL_FLOAT, 8 * sizeof(float), (GLvoid*)(3 * sizeof(float)));
-		_VAOS[i].LinkAttribute(VBO1, 2, 2, GL_FLOAT, 8 * sizeof(float), (GLvoid*)(6 * sizeof(float)));
+		_VAOS[i].LinkAttribute(VBO1, 0, 3, GL_FLOAT, 14 * sizeof(float), 0);
+		_VAOS[i].LinkAttribute(VBO1, 1, 3, GL_FLOAT, 14 * sizeof(float), (GLvoid*)(3 * sizeof(float)));
+		_VAOS[i].LinkAttribute(VBO1, 2, 2, GL_FLOAT, 14 * sizeof(float), (GLvoid*)(6 * sizeof(float)));
+		_VAOS[i].LinkAttribute(VBO1, 3, 3, GL_FLOAT, 14 * sizeof(float), (GLvoid*)(8 * sizeof(float)));
+		_VAOS[i].LinkAttribute(VBO1, 4, 3, GL_FLOAT, 14 * sizeof(float), (GLvoid*)(11 * sizeof(float)));
 		_VAOS[i].Unbind();
 		VBO1.Unbind();
 		_VAOS[i].Unbind();
@@ -50,10 +52,10 @@ void MeshRenderer::SetMesh(Ref<Mesh> mesh) {
 }
 
 void MeshRenderer::Draw(Ref<Shader> shader) {
-	_Draw(shader);
+	_draw(shader);
 }
 
-void MeshRenderer::_Draw(Ref<Shader> shader) {
+void MeshRenderer::_draw(Ref<Shader> shader) {
 	for (int i = 0; i <  _mesh->subMeshes.size(); i++) {
 		glm::mat4 model = glm::mat4(1.0f);
 		model = glm::translate(model, object->position);

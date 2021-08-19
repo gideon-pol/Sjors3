@@ -15,6 +15,7 @@ void FBO::Unbind() {
 
 void FBO::Delete() {
 	glDeleteFramebuffers(1, &ID);
+	std::cout << "FBO DELETED " << std::endl;
 }
 
 void FBO::GenenerateTexture(int width, int height, GLenum slot, GLenum format, GLenum texType, GLenum wrapMode, int count) {
@@ -42,8 +43,8 @@ void FBO::GenenerateTexture2(int width, int height, GLenum slot, GLenum format, 
 		glGenTextures(1, &TexID[i]);
 		glBindTexture(GL_TEXTURE_2D, TexID[i]);
 		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, GL_RGBA, texType, NULL);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapMode);
 		if (wrapMode == GL_CLAMP_TO_BORDER) {

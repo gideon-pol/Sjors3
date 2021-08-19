@@ -28,6 +28,9 @@
     <Filter Include="Source Files\ECS">
       <UniqueIdentifier>{e332838e-f581-4c08-9066-0e226d6efd6e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Shaders\PostProcessing">
+      <UniqueIdentifier>{162b1b79-977c-40dc-89aa-1ae4198b5cb2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="OBJloader.h">
@@ -96,6 +99,9 @@
     <ClInclude Include="windowmanager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="postprocessing.h">
+      <Filter>Header Files\Rendering</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -152,37 +158,39 @@
     <ClCompile Include="windowmanager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="postprocessing.cpp">
+      <Filter>Source Files\Rendering</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="default.frag">
+    <None Include="assets\shaders\diffuse.shader">
       <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="default.vert">
+    <None Include="assets\shaders\pixel.frag">
       <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="pixel.frag">
+    <None Include="assets\shaders\pixel.vert">
       <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="pixel.vert">
+    <None Include="bloom.shader">
+      <Filter>Resource Files\Shaders\PostProcessing</Filter>
+    </None>
+    <None Include="assets\shaders\quad.shader">
       <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="toon.frag">
-      <Filter>Resource Files\Shaders</Filter>
+    <None Include="bloommix.shader">
+      <Filter>Resource Files\Shaders\PostProcessing</Filter>
     </None>
-    <None Include="toon.vert">
-      <Filter>Resource Files\Shaders</Filter>
+    <None Include="pixelate.shader">
+      <Filter>Resource Files\Shaders\PostProcessing</Filter>
     </None>
-    <None Include="diffuse.shader">
-      <Filter>Resource Files\Shaders</Filter>
+    <None Include="colorgrading.shader">
+      <Filter>Resource Files\Shaders\PostProcessing</Filter>
     </None>
-    <None Include="quad.shader">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="depth.shader">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="diffuse2.shader">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="bloomblur.shader">
+      <Filter>Resource Files\Shaders\PostProcessing</Filter>
+    </Text>
   </ItemGroup>
 </Project>

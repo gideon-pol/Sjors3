@@ -11,15 +11,47 @@
 
 SubMesh getSubMesh(std::vector<glm::vec3>* vertsPos, std::vector<glm::vec3>* vertsNormals, std::vector<glm::vec2>* texCoords, std::vector<int>* faceIndeces, std::vector<int>* texIndeces, std::vector<int>* nrmIndeces) {
     SubMesh sub = SubMesh();
-
-    for (unsigned int i = 0; i < faceIndeces->size(); i++)
+    std::cout << "Indeces size: " << (double)faceIndeces->size() / 3 << std::endl;
+    for (unsigned int i = 0; i < faceIndeces->size(); i+=3)
     {
         glm::vec3 vertexPos = vertsPos->at(faceIndeces->at(i));
         glm::vec3 vertexNormal = vertsNormals->at(nrmIndeces->at(i));
-        glm::vec2 texCoord = texCoords->at(texIndeces->at(i));
+        glm::vec2 texCoord = texCoords->at(texIndeces->at(i));    
 
-        Vertex vert = { vertexPos, vertexNormal, texCoord };
+        glm::vec3 vertexPos2 = vertsPos->at(faceIndeces->at(i+1));
+        glm::vec3 vertexNormal2 = vertsNormals->at(nrmIndeces->at(i + 1));
+        glm::vec2 texCoord2 = texCoords->at(texIndeces->at(i + 1));
+
+        glm::vec3 vertexPos3 = vertsPos->at(faceIndeces->at(i + 2));
+        glm::vec3 vertexNormal3 = vertsNormals->at(nrmIndeces->at(i + 2));
+        glm::vec2 texCoord3 = texCoords->at(texIndeces->at(i + 2));
+
+        glm::vec3 edge1 = vertexPos2 - vertexPos;
+        glm::vec3 edge2 = vertexPos3 - vertexPos;
+        glm::vec2 deltaUV1 = texCoord2 - texCoord;
+        glm::vec2 deltaUV2 = texCoord3 - texCoord;
+
+        float f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
+
+        glm::vec3 tangent;
+        tangent.x = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
+        tangent.y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
+        tangent.z = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
+
+        glm::vec3 bitangent;
+        bitangent.x = f * (-deltaUV2.x * edge1.x + deltaUV1.x * edge2.x);
+        bitangent.y = f * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
+        bitangent.z = f * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
+       
+
+        Vertex vert = { vertexPos, vertexNormal, texCoord, tangent, bitangent };
         sub.vertices.push_back(vert);
+
+        Vertex vert2 = { vertexPos2, vertexNormal2, texCoord2, tangent, bitangent };
+        sub.vertices.push_back(vert2);
+
+        Vertex vert3 = { vertexPos3, vertexNormal3, texCoord3, tangent, bitangent };
+        sub.vertices.push_back(vert3);
         //std::cout << /*"Vertex position: " <<*/ vertexPos.x << ", " << vertexPos.y << ", " << vertexPos.z << ", " /*" Vertex normal: "*/ << vertexNormal.x << ", " << vertexNormal.y << ", " << vertexNormal.z << ", "/*" UV: "*/ << texCoord.x << ", " << texCoord.y << std::endl;
     }
 
