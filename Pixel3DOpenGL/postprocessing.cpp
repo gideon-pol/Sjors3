@@ -8,19 +8,19 @@ Bloom::Bloom() {
 	int resolution = 1;
 
 	_finalFBO.Bind();
-	_finalFBO.GenenerateTexture2(Renderer::resolution.x, Renderer::resolution.y, GL_COLOR_ATTACHMENT0, GL_RGBA16F, GL_FLOAT, GL_CLAMP_TO_EDGE, 1);
+	_finalFBO.GenenerateTexture(Renderer::resolution.x, Renderer::resolution.y, GL_COLOR_ATTACHMENT0, GL_RGBA16F, GL_FLOAT, GL_CLAMP_TO_EDGE, 1);
 
 	resolution *= 2;
 
 	_thresholdFBO.Bind();
-	_thresholdFBO.GenenerateTexture2(Renderer::resolution.x / resolution, Renderer::resolution.y / resolution, GL_COLOR_ATTACHMENT0, GL_RGBA16F, GL_FLOAT, GL_CLAMP_TO_EDGE, 1);
+	_thresholdFBO.GenenerateTexture(Renderer::resolution.x / resolution, Renderer::resolution.y / resolution, GL_COLOR_ATTACHMENT0, GL_RGBA16F, GL_FLOAT, GL_CLAMP_TO_EDGE, 1);
 
 	for (int i = 0; i < quality; i++) {
 		resolution *= 2;
 		FBO FBO1 = FBO();
-		FBO1.GenenerateTexture2(Renderer::resolution.x / resolution, Renderer::resolution.y / resolution, GL_COLOR_ATTACHMENT0, GL_RGBA16F, GL_FLOAT, GL_CLAMP_TO_EDGE, 1);
+		FBO1.GenenerateTexture(Renderer::resolution.x / resolution, Renderer::resolution.y / resolution, GL_COLOR_ATTACHMENT0, GL_RGBA16F, GL_FLOAT, GL_CLAMP_TO_EDGE, 1);
 		FBO FBO2 = FBO();
-		FBO2.GenenerateTexture2(Renderer::resolution.x / resolution, Renderer::resolution.y / resolution, GL_COLOR_ATTACHMENT0, GL_RGBA16F, GL_FLOAT, GL_CLAMP_TO_EDGE, 1);
+		FBO2.GenenerateTexture(Renderer::resolution.x / resolution, Renderer::resolution.y / resolution, GL_COLOR_ATTACHMENT0, GL_RGBA16F, GL_FLOAT, GL_CLAMP_TO_EDGE, 1);
 		_blurFBOS.push_back(FBO1);
 		_blurFBOS.push_back(FBO2);
 	}
@@ -138,7 +138,7 @@ Ref<Texture> Bloom::Apply(Ref<Texture> texture) {
 Pixelate::Pixelate() {
 	_shader = Ref<Shader>(new Shader("pixelate.shader"));
 	_FBO1.Bind();
-	_FBO1.GenenerateTexture2(Renderer::resolution.x, Renderer::resolution.y, GL_COLOR_ATTACHMENT0, GL_RGBA16F, GL_FLOAT, GL_CLAMP_TO_EDGE, 1);
+	_FBO1.GenenerateTexture(Renderer::resolution.x, Renderer::resolution.y, GL_COLOR_ATTACHMENT0, GL_RGBA16F, GL_FLOAT, GL_CLAMP_TO_EDGE, 1);
 	_FBO1.Unbind();
 }
 
@@ -167,7 +167,7 @@ Ref<Texture> Pixelate::Apply(Ref<Texture> texture) {
 ColorGrading::ColorGrading() {
 	_shader = Ref<Shader>(new Shader("colorgrading.shader"));
 	_FBO1.Bind();
-	_FBO1.GenenerateTexture2(Renderer::resolution.x, Renderer::resolution.y, GL_COLOR_ATTACHMENT0, GL_RGBA16F, GL_FLOAT, GL_CLAMP_TO_EDGE, 1);
+	_FBO1.GenenerateTexture(Renderer::resolution.x, Renderer::resolution.y, GL_COLOR_ATTACHMENT0, GL_RGBA16F, GL_FLOAT, GL_CLAMP_TO_EDGE, 1);
 	_FBO1.Unbind();
 }
 

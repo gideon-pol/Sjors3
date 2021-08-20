@@ -39,7 +39,7 @@ int main() {
 		return -1;
 	}
 
-	glfwSwapInterval(0);
+	glfwSwapInterval(1);
 	gladLoadGL();
 
 	glViewport(0, 0, 1000, 1000);
@@ -55,6 +55,7 @@ int main() {
 	Ref<Texture> housetreetexture(new Texture("assets/textures/housetreetexture.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE));
 	Ref<Texture> housegroundtexture(new Texture("assets/textures/housegroundtexture.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE));
 	Ref<Texture> normalMap(new Texture("assets/textures/normalmap2.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE));
+	Ref<Texture> normalMapGround(new Texture("assets/textures/normalmapground.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE));
 
 	Renderer::Init();
 	Renderer::activeCamera = &cam;
@@ -65,20 +66,22 @@ int main() {
 	Object obj = Object();
 	obj.position = glm::vec3(0, 0, 0);
 	Ref<MeshRenderer> mrenderer = obj.AddComponent<MeshRenderer>();
-	Ref<Mesh> mesh = loadObj("assets/house.obj");
+	Ref<Mesh> mesh = loadObj("assets/models/house.obj");
 	mrenderer->SetMesh(mesh);
 	Ref<Material> mat(new Material());
 	mat->SetShader(shader);
 	mat->SetVec3("objectColor", glm::vec3(1));
 	mat->SetFloat("specularIntensity", 1);
 	mat->SetTexture("diffuseMap", housetexture);
-	mat->SetTexture("normalMap", normalMap);
+	//mat->SetTexture("normalMap", normalMap);
 	Ref<Material> mathousetree(new Material(mat));
 	mathousetree->SetTexture("diffuseMap", housetreetexture);
 	mathousetree->SetFloat("specularIntensity", 0);
 	Ref<Material> mathouseground(new Material(mat));
 	mathouseground->SetFloat("specularIntensity", 0.25);
 	mathouseground->SetTexture("diffuseMap", housegroundtexture);
+	mathouseground->SetTexture("normalMap", normalMapGround);
+	mathouseground->SetFloat("normalMapStrength", 0.25f);
 	mrenderer->materials[0] = mat;
 	mrenderer->materials[1] = mathousetree;
 	mrenderer->materials[2] = mat;
@@ -86,7 +89,7 @@ int main() {
 	std::cout << "Finished first object init" << std::endl;
 
 	std::cout << std::endl << "Starting second object init" << std::endl;
-	Ref<Mesh> smallSphere = loadObj("assets/smallsphere.obj");
+	Ref<Mesh> smallSphere = loadObj("assets/models/smallsphere.obj");
 	Object objDir = Object();
 	objDir.position = glm::vec3(-2, 2, 0);
 	Ref<MeshRenderer> mrenderer2 = objDir.AddComponent<MeshRenderer>();
@@ -111,7 +114,7 @@ int main() {
 	std::cout << "Finished third object init" << std::endl;
 
 	std::cout << std::endl << "Starting fourth object init" << std::endl;
-	Ref<Mesh> mesh1 = loadObj("assets/teapot.obj");
+	Ref<Mesh> mesh1 = loadObj("assets/models/teapot.obj");
 	Object obj1 = Object();
 	obj1.position = glm::vec3(0, 5, 0);
 	Ref<MeshRenderer> mrenderer1 = obj1.AddComponent<MeshRenderer>();
@@ -119,6 +122,7 @@ int main() {
 	matw->SetVec3("objectColor", glm::vec3(1));
 	matw->SetTexture("diffuseMap", housetexture);
 	matw->SetTexture("normalMap", normalMap);
+	matw->SetFloat("normalMapStrength", 1.0f);
 	mrenderer1->SetMesh(mesh1);
 	mrenderer1->materials[0] = matw;
 	std::cout << "Finished fourth object init" << std::endl;
@@ -135,20 +139,22 @@ int main() {
 	lightDir2->intensity = 0.25f;
 	lightDirObj2.position = glm::vec3(-1, 1, 0);
 		
-	Object light2 = Object();
-	Ref<Light> lightComp2 = light2.AddComponent<Light>();
-	lightComp2->color = glm::vec3(1,1,0);
-	lightComp2->type = LightType::Point;
-	lightComp2->intensity = 0.0f;
+	Object lightPointObj = Object();
+	Ref<Light> lightPoint = lightPointObj.AddComponent<Light>();
+	lightPoint->color = glm::vec3(1,1,0);
+	lightPoint->type = LightType::Point;
+	lightPoint->intensity = 0.0f;
+	lightPointObj.position = glm::vec3(2, 0.5, 0);
 
 	Ref<Bloom> bloomLayer = Ref<Bloom>(new Bloom());
 	bloomLayer->quality = 4;
 	Ref<Pixelate> pixelateLayer = Ref<Pixelate>(new Pixelate());
+	pixelateLayer->pixelateIntensity = 4;
 	Ref<ColorGrading> colorGradingLayer = Ref<ColorGrading>(new ColorGrading());
 	colorGradingLayer->contrast = 1.75f;
 	colorGradingLayer->saturation = 1.5f;
-	colorGradingLayer->brightness = -0.6f;
-	//PostProcessing::AddLayer<Pixelate>(pixelateLayer);
+	colorGradingLayer->brightness = -0.9f;
+	PostProcessing::AddLayer<Pixelate>(pixelateLayer);
 	PostProcessing::AddLayer<Bloom>(bloomLayer);
 	PostProcessing::AddLayer<ColorGrading>(colorGradingLayer);
 
@@ -156,7 +162,7 @@ int main() {
 	depthBuffer.GenenerateTexture(ShadowWidth, ShadowWidth, GL_DEPTH_ATTACHMENT, GL_DEPTH_COMPONENT, GL_FLOAT, GL_CLAMP_TO_BORDER, 1);
 
 	FBO pixelBuffer = FBO();
-	pixelBuffer.GenenerateTexture2(Renderer::resolution.x, Renderer::resolution.y, GL_COLOR_ATTACHMENT0, GL_RGBA16F, GL_FLOAT, GL_CLAMP_TO_EDGE, 1);
+	pixelBuffer.GenenerateTexture(Renderer::resolution.x, Renderer::resolution.y, GL_COLOR_ATTACHMENT0, GL_RGBA16F, GL_FLOAT, GL_CLAMP_TO_EDGE, 1);
 
 	RBO RBO1 = RBO(Renderer::resolution.x, Renderer::resolution.y);
 	RBO1.BindToFBO();
@@ -214,15 +220,9 @@ int main() {
 		if (Input::GetKey(GLFW_KEY_I)) {
 			pixel = Ref<Shader>(new Shader("assets/shaders/pixel.vert", "assets/shaders/pixel.frag"));
 		}
-
-		/*
+		
 		if (Input::GetKey(GLFW_KEY_U)) {
-			shader = Ref<Shader>(new Shader("assets/diffuse.shader"));
-			mathouseground->SetShader(shader);
-			mathouseground->SetVec3("objectColor", glm::vec3(1));
-			mathouseground->SetFloat("specularIntensity", 0.25);
-			mathouseground->SetTexture("diffuseMap", housegroundtexture);
-
+			shader = Ref<Shader>(new Shader("assets/shaders/diffuse.shader"));
 			mat->SetShader(shader);
 			mat->SetVec3("objectColor", glm::vec3(1));
 			mat->SetFloat("specularIntensity", 1);
@@ -236,14 +236,12 @@ int main() {
 			lightDir->color = glm::vec3(1);
 			lightDir2->color = glm::vec3(0.5, 0.5, 1);
 		}
-		*/
 
 		long long now = _Query_perf_counter();
 		long long delta = now - oldTime;
 		oldTime = now;
 
 		std::cout << "FPS: " << 1 / ((double)delta/10000000) << std::endl;
-
 		
 		objDir.position = glm::vec3(0, sin((double)now / 50000000) * 3, cos((double)now / 50000000) * 3);
 		lightDirObj.position = glm::vec3(0, sin((double)now / 50000000) * 3, cos((double)now / 50000000) * 3);
@@ -251,9 +249,9 @@ int main() {
 		lightDir->intensity = lightDirObj.position.y / 3;
 		lightDir2->intensity = lightDirObj2.position.y/3*0.25;
 		//objPoint.position = glm::vec3(cos((double)now / 10000000 + 3.14) * 3, 2, sin((double)now / 10000000 + 3.14) * 3);
-		//light2.position = objPoint.position;
+		lightPointObj.position = glm::vec3(2, 0.5, cos((double)now / 10000000 + 3.14));
 		
-		//light2.position = objPoint.position;
+		//lightPointObj.position = objPoint.position;
 		glViewport(0, 0, ShadowWidth, ShadowHeight);
 
 
@@ -314,65 +312,3 @@ int main() {
 	WindowManager::Destroy();
 	glfwTerminate();
 }
-
-
-/*
-		FBO frameBuffer = FBO();
-		frameBuffer.GenenerateTexture(ScreenWidth, ScreenHeight, GL_COLOR_ATTACHMENT0, 2);
-		unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
-		glDrawBuffers(2, attachments);
-
-		glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, 0);
-
-		FBO pingPong[2];
-		for (unsigned int i = 0; i < 2; i++)
-		{
-			pingPong[i] = FBO();
-			pingPong[i].GenenerateTexture(ScreenWidth, ScreenHeight, GL_COLOR_ATTACHMENT0, 1);
-		}
-
-		bool horizontal = true, first_iteration = true;
-		int amount = 5;
-		bloom.Activate();
-		for (unsigned int i = 0; i < amount; i++)
-		{
-			pingPong[horizontal].Bind();
-			bloom.SetIntParameter("horizontal", horizontal);
-			bloom.SetFloatParameter("lod", 1);
-			first_iteration ? frameBuffer.BindTexture(1) : pingPong[!horizontal].BindTexture(0);
-			glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, 0);
-			glGenerateMipmap(GL_TEXTURE_2D);
-			horizontal = !horizontal;
-			if (first_iteration)
-				first_iteration = false;
-		}
-
-		frameBuffer.Unbind();
-		frameBuffer.Delete();
-		for (unsigned int i = 0; i < 2; i++)
-		{
-			pingPong[i].Delete();
-		}
-
-
-		bloomblend.Activate();
-
-		glActiveTexture(GL_TEXTURE0);
-		frameBuffer.BindTexture(0);
-
-		glActiveTexture(GL_TEXTURE1);
-		pingPong[1].BindTexture(0);
-
-		bloomblend.SetIntParameter("scene", 0);
-		bloomblend.SetIntParameter("bloomBlur", 1);
-		bloomblend.SetFloatParameter("exposure", 1);
-		*/
-
-		/*
-				frameBuffer.DeleteTexture(-1);
-
-				for (unsigned int i = 0; i < 2; i++)
-				{
-					pingPong[i].DeleteTexture(-1);
-				}
-				*/

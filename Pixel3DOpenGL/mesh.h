@@ -23,7 +23,7 @@ public:
 	std::vector<GLuint> indeces;
 
 	//~SubMesh() { std::cout << "SubMesh destructor called" << std::endl; };
-	SubMesh() { std::cout << "SubMesh constructor called" << std::endl; };
+	SubMesh() { };
 	SubMesh(Vertex verts[]) {
 		for (int i = 0; i < sizeof(verts) / sizeof(Vertex); i++) {
 			vertices.push_back(verts[i]);

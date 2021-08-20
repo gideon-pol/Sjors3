@@ -78,7 +78,7 @@ vec3 HSVtoRGB(in vec3 HSV)
 void main()
 {
     vec3 hdrColor = texture(tex0, texCoord).xyz;
-    vec3 mapped = vec3(1.0) - exp(-hdrColor * exposure);
+    vec3 mapped = aces(hdrColor);//vec3(1.0) - exp(-hdrColor * exposure);
 
     //vec3 mapped = filmicToneMapping(hdrColor);
     mapped = pow(mapped, vec3(1.0 / gamma));

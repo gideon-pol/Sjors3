@@ -9,7 +9,6 @@ x64/
 *.slo
 *.lo
 *.o
-*.obj
 
 # Precompiled Headers
 *.gch
@@ -28,7 +27,6 @@ x64/
 *.lai
 *.la
 *.a
-*.lib
 
 # Executables
 *.exe

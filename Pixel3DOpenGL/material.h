@@ -101,9 +101,6 @@ public:
 		if (_parameters.find(parameter) != _parameters.end()) {
 			_parameters[parameter].first = value;
 		}
-		else {
-			std::cout << "Couldnt find texture" << std::endl;
-		}
 	}
 
 	Ref<Shader> GetParameterizedShader() {
@@ -139,6 +136,7 @@ public:
 					else {
 						if (_parameters[uniformName + "Assigned"].first.get() != nullptr)
 							*(int*)_parameters[uniformName + "Assigned"].first.get() = 0;
+						glActiveTexture(GL_TEXTURE0 + texIndex);
 						glBindTexture(GL_TEXTURE_2D, 0);
 					}
 					break;

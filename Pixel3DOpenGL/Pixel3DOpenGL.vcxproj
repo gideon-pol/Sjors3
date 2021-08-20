@@ -198,6 +198,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\shaders\diffuse.shader" />
+    <None Include="assets\shaders\diffuseworld.shader" />
     <None Include="assets\shaders\pixel.frag" />
     <None Include="assets\shaders\pixel.vert" />
     <None Include="assets\shaders\quad.shader" />

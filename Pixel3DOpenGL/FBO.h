@@ -17,7 +17,6 @@ public:
 	void Delete();
 
 	void GenenerateTexture(int width, int height, GLenum slot, GLenum format, GLenum texType, GLenum wrapMode, int count);
-	void GenenerateTexture2(int width, int height, GLenum slot, GLenum format, GLenum texType, GLenum wrapMode, int count);
 	void BindTexture(int index);
 	void DeleteTexture(int index);
 };

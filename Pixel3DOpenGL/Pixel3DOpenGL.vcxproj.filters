@@ -187,6 +187,9 @@
     <None Include="colorgrading.shader">
       <Filter>Resource Files\Shaders\PostProcessing</Filter>
     </None>
+    <None Include="assets\shaders\diffuseworld.shader">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="bloomblur.shader">

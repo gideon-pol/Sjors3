@@ -38,7 +38,7 @@ public:
 	~Pixelate();
 
 	Ref<Texture> Apply(Ref<Texture> texture);
-	float pixelateIntensity = 2.5f;
+	float pixelateIntensity = 3.0f;
 private:
 	Ref<Shader> _shader;
 	FBO _FBO1;

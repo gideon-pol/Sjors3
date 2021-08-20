@@ -30,30 +30,46 @@ uniform mat4 MVP;
 uniform mat4 s_LightSpaceMat;
 
 out VS_OUT{
+	vec3 FragPos;
 	vec3 Normal;
 	vec2 TexCoord;
+	mat3 TBN;
+	vec3 TangentNormal;
 	vec3 TangentViewPos;
 	vec3 TangentFragPos;
 } vs_out;
 
 void main()
 {
+	vs_out.FragPos = vec3(model * vec4(aPos, 1));
 	vs_out.Normal = normalize(mat3(transpose(inverse(model))) * aNormal);//(model * vec4(aNormal, 1)).xyz;
-	
 	vs_out.TexCoord = aCoord;
+
 	gl_Position = MVP * vec4(aPos, 1);
 
 	vec3 T = normalize(vec3(model * vec4(aTangent, 0.0)));
-	vec3 B = normalize(vec3(model * vec4(aBitangent, 0.0)));
 	vec3 N = normalize(vec3(model * vec4(aNormal, 0.0)));
+	T = normalize(T - dot(T, N) * N);
+	vec3 B = cross(N, T);
+	vs_out.TBN = mat3(T, B, N);
+	
+	/*
+	vec3 T = normalize(vec3(model * vec4(aTangent, 0.0)));
+	vec3 N = normalize(vec3(model * vec4(aNormal, 0.0)));
+	T = normalize(T - dot(T, N) * N);
+	vec3 B = cross(N, T);
 	mat3 TBN = transpose(mat3(T, B, N));
+	vs_out.TBN = TBN;
+	vs_out.TangentNormal = TBN * vs_out.Normal;
+	
 	vs_out.TangentViewPos = TBN * s_ViewPos;
-	vs_out.TangentFragPos = TBN * vec3(model * vec4(aPos, 1));
+	vs_out.TangentFragPos = TBN * vs_out.FragPos;
 
 	for (int i = 0; i < s_LightCount; i++) {
 		//s_Lights[i].Position = TBN * s_Lights[i].Position;
 		LightDatas[i].TangentPosition = TBN * s_Lights[i].Position;
 	}
+	*/
 }
 
 #shader fragment
@@ -80,8 +96,11 @@ uniform float s_Time;
 uniform float s_DeltaTime;
 
 in VS_OUT{
+	vec3 FragPos;
 	vec3 Normal;
 	vec2 TexCoord;
+	mat3 TBN;
+	vec3 TangentNormal;
 	vec3 TangentViewPos;
 	vec3 TangentFragPos;
 } fs_in;
@@ -94,14 +113,13 @@ uniform vec3 s_ViewPos;
 uniform float s_AmbientIntensity;
 uniform vec3 s_AmbientColor;
 
-uniform mat4 model;
-uniform mat4 view;
-uniform mat4 proj;
 uniform mat4 s_LightSpaceMat;
 
 uniform sampler2D diffuseMap;
 uniform sampler2D normalMap;
 uniform sampler2D shadowMap;
+
+uniform float normalMapStrength;
 
 /*
 float calc_shadow(float lightDotNorm) {
@@ -132,15 +150,24 @@ float calc_shadow(float lightDotNorm) {
 void main()
 {
 	vec2 uv = (fs_in.TexCoord - vec2(0.5)) * 2;
-	vec3 viewDir = normalize(fs_in.TangentViewPos - fs_in.TangentFragPos);
+	vec3 viewDir = normalize(s_ViewPos - fs_in.FragPos);
 	FragColor = vec4(s_AmbientColor * s_AmbientIntensity * objectColor, 1) + vec4(emission, 1);
 	vec4 texColor;
-
 	if (diffuseMapAssigned == 0) {
 		texColor = vec4(1);
 	}
 	else {
 		texColor = texture(diffuseMap, fs_in.TexCoord);
+	}
+
+	vec3 normal;
+	if (normalMapAssigned == 0 || isnan(fs_in.TBN[0][0])) {
+		normal = fs_in.Normal;
+	}
+	else {
+		normal = texture(normalMap, fs_in.TexCoord).rgb;
+		normal = normalize(normal * 2.0 - 1.0);
+		normal = normalize(fs_in.TBN * normal * normalMapStrength + (1 - normalMapStrength) * fs_in.Normal);
 	}
 	
 	for (int i = 0; i < s_LightCount; i++) {
@@ -148,18 +175,15 @@ void main()
 
 		vec3 lightDir;
 		if (s_Lights[i].Type == 0) {
-			lightDir = normalize(LightDatas[i].TangentPosition);// -fs_in.FragPos);
+			lightDir = normalize(light.Position);// -fs_in.FragPos);
 		}
 		else {
-			lightDir = normalize(LightDatas[i].TangentPosition - fs_in.TangentFragPos);
+			lightDir = normalize(light.Position - fs_in.FragPos);
 		}
-		
-		vec3 normal = texture(normalMap, fs_in.TexCoord).rgb;
-		normal = normalize(normal * 2.0 - 1.0);
 
 		float lightDotNorm = dot(normal, lightDir);
 		float dif = max(lightDotNorm, 0);
-		float lightDist = length(LightDatas[i].TangentPosition - fs_in.TangentFragPos);
+		float lightDist = length(light.Position - fs_in.FragPos);
 		
 		vec3 reflectDir = reflect(-lightDir, normal);
 		float spec = pow(max(dot(viewDir, reflectDir), 0.0), 128) * specularIntensity;
