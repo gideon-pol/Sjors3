@@ -11,9 +11,9 @@
 #include "EBO.h"
 #include "FBO.h"
 #include "shader.h"
-#include "ECS.h"
 #include "camera.h"
 #include "light.h"
+#include "skybox.h"
 
 class Renderer {
 public:
@@ -26,7 +26,8 @@ public:
 	static void Draw(VAO VAO1, size_t count);
 	static void DrawQuad(Ref<Shader> shader);
 	static void DrawScene();
-	static void DrawSceneShadowMap(Ref<Light> light, Ref<Shader> shader);
+	static void DrawSceneShadowMaps(Ref<Shader> shader);
+	static void DrawSkybox(Ref<Skybox> skybox);
 
 	template<typename T>
 	static void AddRenderComponent(Ref<T> component) {
@@ -59,7 +60,6 @@ public:
 
 private:
 	static std::vector<Ref<RenderComponent>> renderComponents;
-	
 };
 
-#endif#pragma once
+#endif

@@ -3,6 +3,7 @@
 #define MATERIAL_H
 
 #include <map>
+#include <unordered_map>
 #include <typeindex>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -13,12 +14,12 @@
 
 class Material {
 public:
-	Material() { std::cout << "Material constructor called" << std::endl; };
+	Material() { };
 
 	Material(const Ref<Material> mat) {
 		_parameters.clear();
 
-		std::map<std::string, std::pair<Ref<void>, GLenum>>::const_iterator it2;
+		std::unordered_map<std::string, std::pair<Ref<void>, GLenum>>::const_iterator it2;
 		for (it2 = mat->_parameters.begin(); it2 != mat->_parameters.end(); it2++) {
 			std::string uniformName = it2->first;
 			void* value = it2->second.first.get();
@@ -57,7 +58,7 @@ public:
 		for (it2 = uniforms.begin(); it2 != uniforms.end(); it2++) {
 			std::string uniformName = it2->first;
 			GLenum type = it2->second;
-			std::cout << "Actual parameter: " << uniformName << std::endl;
+			std::cout << "Material parameter: " << uniformName << std::endl;
 			switch (type) {
 				case GL_INT:
 					_parameters.insert(std::make_pair(uniformName, std::make_pair<Ref<void>, GLenum>(Ref<void>(new int(0)), GL_INT)));
@@ -72,7 +73,6 @@ public:
 					_parameters.insert(std::make_pair(uniformName, std::make_pair<Ref<void>, GLenum>(Ref<void>(new glm::vec3(0)), GL_FLOAT_VEC3)));
 					break;
 				case GL_SAMPLER_2D:
-					std::cout << "Got a sampler" << std::endl;
 					_parameters.insert(std::make_pair(uniformName, std::make_pair<Ref<void>, GLenum>(NULL, GL_SAMPLER_2D)));
 					break;
 			}
@@ -104,7 +104,7 @@ public:
 	}
 
 	Ref<Shader> GetParameterizedShader() {
-		std::map<std::string, std::pair<Ref<void>, GLenum>>::iterator it;
+		std::unordered_map<std::string, std::pair<Ref<void>, GLenum>>::iterator it;
 		GLuint texIndex = 0;
 		
 		for (it = _parameters.begin(); it != _parameters.end(); it++) {
@@ -147,7 +147,7 @@ public:
 	}
 
 private:
-	std::map<std::string, std::pair<Ref<void>, GLenum>> _parameters;
+	std::unordered_map<std::string, std::pair<Ref<void>, GLenum>> _parameters;
 	Ref<Shader> _shader;
 };
 

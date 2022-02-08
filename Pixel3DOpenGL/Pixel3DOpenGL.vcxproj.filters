@@ -63,9 +63,6 @@
     <ClInclude Include="meshrenderer.h">
       <Filter>Header Files\ECS</Filter>
     </ClInclude>
-    <ClInclude Include="ECS.h">
-      <Filter>Header Files\ECS</Filter>
-    </ClInclude>
     <ClInclude Include="object.h">
       <Filter>Header Files\ECS</Filter>
     </ClInclude>
@@ -102,6 +99,9 @@
     <ClInclude Include="postprocessing.h">
       <Filter>Header Files\Rendering</Filter>
     </ClInclude>
+    <ClInclude Include="skybox.h">
+      <Filter>Header Files\Rendering</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -128,9 +128,6 @@
     <ClCompile Include="shader.cpp">
       <Filter>Source Files\Rendering</Filter>
     </ClCompile>
-    <ClCompile Include="texture.cpp">
-      <Filter>Source Files\Rendering</Filter>
-    </ClCompile>
     <ClCompile Include="VAO.cpp">
       <Filter>Source Files\Rendering</Filter>
     </ClCompile>
@@ -138,12 +135,6 @@
       <Filter>Source Files\Rendering</Filter>
     </ClCompile>
     <ClCompile Include="meshrenderer.cpp">
-      <Filter>Source Files\ECS</Filter>
-    </ClCompile>
-    <ClCompile Include="ECS.cpp">
-      <Filter>Source Files\ECS</Filter>
-    </ClCompile>
-    <ClCompile Include="object.cpp">
       <Filter>Source Files\ECS</Filter>
     </ClCompile>
     <ClCompile Include="RBO.cpp">
@@ -161,6 +152,12 @@
     <ClCompile Include="postprocessing.cpp">
       <Filter>Source Files\Rendering</Filter>
     </ClCompile>
+    <ClCompile Include="mesh.cpp">
+      <Filter>Source Files\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="OBJloader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\shaders\diffuse.shader">
@@ -172,28 +169,26 @@
     <None Include="assets\shaders\pixel.vert">
       <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="bloom.shader">
-      <Filter>Resource Files\Shaders\PostProcessing</Filter>
-    </None>
     <None Include="assets\shaders\quad.shader">
       <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="bloommix.shader">
-      <Filter>Resource Files\Shaders\PostProcessing</Filter>
-    </None>
-    <None Include="pixelate.shader">
-      <Filter>Resource Files\Shaders\PostProcessing</Filter>
-    </None>
-    <None Include="colorgrading.shader">
-      <Filter>Resource Files\Shaders\PostProcessing</Filter>
     </None>
     <None Include="assets\shaders\diffuseworld.shader">
       <Filter>Resource Files\Shaders</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="bloomblur.shader">
+    <None Include="assets\shaders\skybox.shader">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="assets\shaders\postprocessing\colorgrading.shader">
       <Filter>Resource Files\Shaders\PostProcessing</Filter>
-    </Text>
+    </None>
+    <None Include="assets\shaders\postprocessing\pixelate.shader">
+      <Filter>Resource Files\Shaders\PostProcessing</Filter>
+    </None>
+    <None Include="assets\shaders\postprocessing\bloom.shader">
+      <Filter>Resource Files\Shaders\PostProcessing</Filter>
+    </None>
+    <None Include="assets\shaders\depth.shader">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

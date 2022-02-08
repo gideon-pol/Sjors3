@@ -3,24 +3,24 @@
 std::vector<Ref<PostProcessLayer>> PostProcessing::_layers;
 
 Bloom::Bloom() {
-	_shader = Ref<Shader>(new Shader("bloom.shader"));
+	_shader = Ref<Shader>(new Shader("assets/shaders/postprocessing/bloom.shader"));
 
 	int resolution = 1;
 
 	_finalFBO.Bind();
-	_finalFBO.GenenerateTexture(Renderer::resolution.x, Renderer::resolution.y, GL_COLOR_ATTACHMENT0, GL_RGBA16F, GL_FLOAT, GL_CLAMP_TO_EDGE, 1);
+	_finalFBO.GenenerateTexture(Renderer::resolution.x, Renderer::resolution.y, GL_COLOR_ATTACHMENT0, GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, 1);
 
 	resolution *= 2;
 
 	_thresholdFBO.Bind();
-	_thresholdFBO.GenenerateTexture(Renderer::resolution.x / resolution, Renderer::resolution.y / resolution, GL_COLOR_ATTACHMENT0, GL_RGBA16F, GL_FLOAT, GL_CLAMP_TO_EDGE, 1);
+	_thresholdFBO.GenenerateTexture(Renderer::resolution.x / resolution, Renderer::resolution.y / resolution, GL_COLOR_ATTACHMENT0, GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, 1);
 
 	for (int i = 0; i < quality; i++) {
 		resolution *= 2;
 		FBO FBO1 = FBO();
-		FBO1.GenenerateTexture(Renderer::resolution.x / resolution, Renderer::resolution.y / resolution, GL_COLOR_ATTACHMENT0, GL_RGBA16F, GL_FLOAT, GL_CLAMP_TO_EDGE, 1);
+		FBO1.GenenerateTexture(Renderer::resolution.x / resolution, Renderer::resolution.y / resolution, GL_COLOR_ATTACHMENT0, GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, 1);
 		FBO FBO2 = FBO();
-		FBO2.GenenerateTexture(Renderer::resolution.x / resolution, Renderer::resolution.y / resolution, GL_COLOR_ATTACHMENT0, GL_RGBA16F, GL_FLOAT, GL_CLAMP_TO_EDGE, 1);
+		FBO2.GenenerateTexture(Renderer::resolution.x / resolution, Renderer::resolution.y / resolution, GL_COLOR_ATTACHMENT0, GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, 1);
 		_blurFBOS.push_back(FBO1);
 		_blurFBOS.push_back(FBO2);
 	}
@@ -42,7 +42,7 @@ Bloom::~Bloom() {
 
 Ref<Texture> Bloom::Apply(Ref<Texture> texture) {
 	_shader->Activate();
-	_shader->SetFloatParameter("threshold", 3);
+	_shader->SetFloatParameter("threshold", threshold);
 	_shader->SetIntParameter("tex0", 0);
 	_shader->SetIntParameter("tex1", 1);
 	_shader->SetIntParameter("mode", 0);
@@ -136,9 +136,9 @@ Ref<Texture> Bloom::Apply(Ref<Texture> texture) {
 }
 
 Pixelate::Pixelate() {
-	_shader = Ref<Shader>(new Shader("pixelate.shader"));
+	_shader = Ref<Shader>(new Shader("assets/shaders/postprocessing/pixelate.shader"));
 	_FBO1.Bind();
-	_FBO1.GenenerateTexture(Renderer::resolution.x, Renderer::resolution.y, GL_COLOR_ATTACHMENT0, GL_RGBA16F, GL_FLOAT, GL_CLAMP_TO_EDGE, 1);
+	_FBO1.GenenerateTexture(Renderer::resolution.x, Renderer::resolution.y, GL_COLOR_ATTACHMENT0, GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, 1);
 	_FBO1.Unbind();
 }
 
@@ -165,9 +165,9 @@ Ref<Texture> Pixelate::Apply(Ref<Texture> texture) {
 }
 
 ColorGrading::ColorGrading() {
-	_shader = Ref<Shader>(new Shader("colorgrading.shader"));
+	_shader = Ref<Shader>(new Shader("assets/shaders/postprocessing/colorgrading.shader"));
 	_FBO1.Bind();
-	_FBO1.GenenerateTexture(Renderer::resolution.x, Renderer::resolution.y, GL_COLOR_ATTACHMENT0, GL_RGBA16F, GL_FLOAT, GL_CLAMP_TO_EDGE, 1);
+	_FBO1.GenenerateTexture(Renderer::resolution.x, Renderer::resolution.y, GL_COLOR_ATTACHMENT0, GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, 1);
 	_FBO1.Unbind();
 }
 

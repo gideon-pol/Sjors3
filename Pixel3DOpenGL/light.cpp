@@ -1,11 +1,6 @@
 #include "light.h"
 #include "renderer.h"
 
-Light::~Light() {
-	std::cout << "Light destructor called" << std::endl;
-	//Renderer::RemoveLight(this->shared_from_this());
-}
-
 void Light::Init() {
 	Renderer::AddLight(this->shared_from_this());
 }
@@ -29,5 +24,5 @@ glm::mat4 Light::GetViewMatrix() {
 }
 
 glm::mat4 Light::GetDirectionalLightMatrix() {
-	return glm::ortho(-20.0f, 20.0f, -20.0f, 20.0f, 0.01f, 100.0f) * glm::lookAt(object->position, glm::vec3(0), glm::vec3(0, 1, 0));
+	return glm::ortho(-5.0f, 5.0f, -5.0f, 5.0f, -5.0f, 100.0f) * glm::lookAt(object->position, glm::vec3(0), glm::vec3(0, 1, 0));
 }

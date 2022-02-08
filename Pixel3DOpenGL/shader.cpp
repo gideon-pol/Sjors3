@@ -34,7 +34,7 @@ Shader::Shader(const char* shaderFile) {
 	std::ifstream in(shaderFile, std::ios::binary);
 		
 	if (!in) {
-		std::cout << "Couldn't open shader file" << std::endl;
+		std::cout << "Couldn't open shader file: " << shaderFile << std::endl;
 		return;
 	}
 
@@ -62,7 +62,6 @@ Shader::Shader(const char* shaderFile) {
 				}
 
 				streams[(int)type] << "uniform int " << varName << "Assigned = 0;" << std::endl;
-				std::cout << "Sampler name: " << varName << std::endl;
 			}
 		}
 	}
@@ -130,6 +129,9 @@ void Shader::SetIntParameter(std::string parameter, int value) {
 	if (_uniforms.find(parameter) != _uniforms.end()) {
 		glUniform1i(_uniforms[parameter].second, value);
 	}
+	else {
+		std::cout << "No uniform of name " << parameter << std::endl;
+	}
 }
 
 void Shader::SetMat4Parameter(std::string parameter, glm::f32* value) {
@@ -155,17 +157,17 @@ void Shader::Delete() {
 }
 
 bool Shader::_checkCompile(ShaderType shaderType) {
-	return true;
 	GLint successfullyCompiled;
 	char errMsg[1024];
 
-	if(shaderType == ShaderType::PROGRAM) {
+	if(shaderType != ShaderType::PROGRAM) {
 		glGetShaderiv(ID, GL_COMPILE_STATUS, &successfullyCompiled);
 
 		if (successfullyCompiled == GL_FALSE)
 		{
 			glGetShaderInfoLog(ID, 1024, NULL, errMsg);
-			std::cout << "SHADER_COMPILATION_ERROR for: PROGRAM" << "\n" << errMsg << std::endl;
+			std::cout << "SHADER_COMPILATION_ERROR for: " << (shaderType == ShaderType::VERTEX ? "VERTEX" : "FRAGMENT") << "\n" << errMsg << std::endl;
+
 			return false;
 		}
 		else 
@@ -179,7 +181,7 @@ bool Shader::_checkCompile(ShaderType shaderType) {
 		if (successfullyCompiled == GL_FALSE)
 		{
 			glGetProgramInfoLog(ID, 1024, NULL, errMsg);
-			std::cout << "SHADER_COMPILATION_ERROR for: " << (shaderType == ShaderType::VERTEX ? "VERTEX" : "FRAGMENT") << "\n" << errMsg << std::endl;
+			std::cout << "SHADER_COMPILATION_ERROR for: PROGRAM" << "\n" << errMsg << std::endl;
 			return false;
 		}
 	}
@@ -195,7 +197,6 @@ std::map<std::string, GLenum> Shader::GetUniforms() {
 	for (it = _uniforms.begin(); it != _uniforms.end(); it++) {
 		
 		if (!(it->first[0] == 's' && it->first[1] == '_')) {
-			std::cout << "Material parameter: " << it->first << std::endl;
 			m.emplace(it->first, it->second.first);
 		}
 	}

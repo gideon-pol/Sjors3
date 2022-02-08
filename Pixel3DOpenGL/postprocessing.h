@@ -6,7 +6,6 @@
 #include "renderer.h"
 #include "FBO.h"
 #include "shader.h"
-
 #include "texture.h"
 #include "Core.h"
 
@@ -25,6 +24,7 @@ public:
 
 	Ref<Texture> Apply(Ref<Texture> texture);
 	int quality = 4;
+	float threshold = 1;
 private:
 	Ref<Shader> _shader;
 	FBO _thresholdFBO;

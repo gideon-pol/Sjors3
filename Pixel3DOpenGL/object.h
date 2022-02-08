@@ -15,9 +15,6 @@ public:
 	bool enabled = true;
 	uint64_t id;
 
-	//Object();
-	~Object();
-
 	template<typename T>
 	Ref<T> AddComponent() {
 		Ref<T> newComponent = std::make_shared<T>();

@@ -3,19 +3,15 @@
 #include "renderer.h"
 
 MeshRenderer::MeshRenderer() {
-	std::cout << "Meshrenderer constructor called" << std::endl;
 	type = typeid(MeshRenderer);
 }
 
 MeshRenderer::~MeshRenderer() {
-	std::cout << "Meshrenderer destructor called" << std::endl;
-	
 	for (int i = 0; i <  _mesh->subMeshes.size(); i++) {
 		_VAOS[i].Delete();
 	}
 	
 	_EBO.Delete();
-	std::cout << "Meshrenderer destructor finished" << std::endl;
 }
 
 void MeshRenderer::Init() {
@@ -27,17 +23,25 @@ void Destroy(Ref<MeshRenderer> mrenderer) {
 	mrenderer->object->RemoveComponent<MeshRenderer>(mrenderer);
 }
 
+glm::mat4 MeshRenderer::GetModelMatrix() {
+	glm::mat4 model = glm::mat4(1.0f);
+	model = glm::translate(model, object->position);
+	model = glm::rotate(model, glm::radians<float>(object->rotation.y), glm::vec3(0, 0, 1.0f));
+	model = glm::rotate(model, glm::radians<float>(object->rotation.x), glm::vec3(1.0f, 0, 0));
+	model = glm::rotate(model, glm::radians<float>(object->rotation.z), glm::vec3(0, 1.0f, 0));
+	return model;
+}
+
 void MeshRenderer::SetMesh(Ref<Mesh> mesh) {
 	_mesh = mesh;
 
-	for (int i = 0; i <  _mesh->subMeshes.size(); i++) {
-
+	for (int i = 0; i < _mesh->subMeshes.size(); i++) {
 		_VAOS[i] = VAO();
 		_VAOS[i].Init();
 
 		VBO VBO1 = VBO(_mesh->GetSubMesh(i));
 
-		if ( _mesh->subMeshes[0].indeces.size() == 0) _EBO.Unbind();
+		if (_mesh->subMeshes[0].indeces.size() == 0) _EBO.Unbind();
 		//else _EBO = EBO(mesh);
 
 		_VAOS[i].LinkAttribute(VBO1, 0, 3, GL_FLOAT, 14 * sizeof(float), 0);
@@ -56,42 +60,27 @@ void MeshRenderer::Draw(Ref<Shader> shader) {
 }
 
 void MeshRenderer::_draw(Ref<Shader> shader) {
+	glm::mat4 model = GetModelMatrix();
+	glm::mat4 VP = Renderer::activeCamera->GetVPMatrix();
+	glm::mat4 MVP = VP * model;
+
+	//shader->SetMat4Parameter("MVP", glm::value_ptr(MVP));
+	shader->SetMat4Parameter("model", glm::value_ptr(model));
+
 	for (int i = 0; i <  _mesh->subMeshes.size(); i++) {
-		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, object->position);
-		model = glm::rotate(model, glm::radians<float>(object->rotation.y), glm::vec3(0, 0, 1.0f));
-		model = glm::rotate(model, glm::radians<float>(object->rotation.x), glm::vec3(1.0f, 0, 0));
-		model = glm::rotate(model, glm::radians<float>(object->rotation.z), glm::vec3(0, 1.0f, 0));
-		glm::mat4 VP = Renderer::activeCamera->GetVPMatrix();
-		glm::mat4 V = Renderer::activeCamera->GetViewMatrix();
-		glm::mat4 P = Renderer::activeCamera->GetProjectionMatrix();
-		glm::mat4 MVP = VP * model;
-		shader->Activate();
-		shader->SetMat4Parameter("MVP", glm::value_ptr(MVP));
-		shader->SetMat4Parameter("model", glm::value_ptr(model));
-		shader->SetMat4Parameter("view", glm::value_ptr(V));
-		shader->SetMat4Parameter("proj", glm::value_ptr(P));
-		Renderer::Draw(_VAOS[i],  _mesh->GetSubMesh(0)->GetSize());
+		Renderer::Draw(_VAOS[i], _mesh->GetSubMesh(i)->GetSize());
 	}
 }
 
 void MeshRenderer::Draw() {
+	glm::mat4 model = GetModelMatrix();
+	glm::mat4 VP = Renderer::activeCamera->GetVPMatrix();
+	glm::mat4 MVP = VP * model;
+
 	for (int i = 0; i <  _mesh->subMeshes.size(); i++) {
-		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, object->position);
-		model = glm::rotate(model, glm::radians<float>(object->rotation.y), glm::vec3(0, 0, 1.0f));
-		model = glm::rotate(model, glm::radians<float>(object->rotation.x), glm::vec3(1.0f, 0, 0));
-		model = glm::rotate(model, glm::radians<float>(object->rotation.z), glm::vec3(0, 1.0f, 0));
-		glm::mat4 VP = Renderer::activeCamera->GetVPMatrix();
-		glm::mat4 V = Renderer::activeCamera->GetViewMatrix();
-		glm::mat4 P = Renderer::activeCamera->GetProjectionMatrix();
-		glm::mat4 MVP = VP * model;
 		Ref<Shader> shader = materials[i]->GetParameterizedShader();
-		shader->Activate();
 		shader->SetMat4Parameter("MVP", glm::value_ptr(MVP));
 		shader->SetMat4Parameter("model", glm::value_ptr(model));
-		//shader->SetMat4Parameter("view", glm::value_ptr(V));
-		//shader->SetMat4Parameter("proj", glm::value_ptr(P));
-		Renderer::Draw(_VAOS[i],  _mesh->GetSubMesh(i)->GetSize());
+		Renderer::Draw(_VAOS[i], _mesh->GetSubMesh(i)->GetSize());
 	}
 }

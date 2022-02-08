@@ -25,6 +25,7 @@ public:
 
 	virtual void Draw() { };
 	virtual void Draw(Ref<Shader>) { };
+	virtual glm::mat4 GetModelMatrix() { return glm::mat4(); };
 };
 
 #endif

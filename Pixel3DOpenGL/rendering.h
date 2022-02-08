@@ -11,3 +11,4 @@
 #include "mesh.h"
 #include "renderer.h"
 #include "postprocessing.h"
+#include "skybox.h"

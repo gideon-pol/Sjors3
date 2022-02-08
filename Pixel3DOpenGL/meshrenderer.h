@@ -19,6 +19,7 @@ public:
 
 	void Init();
 
+	glm::mat4 GetModelMatrix();
 	void SetMesh(Ref<Mesh> mesh);
 	const Ref<Mesh> GetMesh() { return _mesh; }
 	void Draw();

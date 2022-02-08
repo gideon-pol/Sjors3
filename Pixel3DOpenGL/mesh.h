@@ -22,7 +22,6 @@ public:
 	std::vector<Vertex> vertices;
 	std::vector<GLuint> indeces;
 
-	//~SubMesh() { std::cout << "SubMesh destructor called" << std::endl; };
 	SubMesh() { };
 	SubMesh(Vertex verts[]) {
 		for (int i = 0; i < sizeof(verts) / sizeof(Vertex); i++) {
@@ -44,8 +43,7 @@ class Mesh {
 public:
 	std::vector<SubMesh> subMeshes = {};
 
-	~Mesh() { std::cout << "Mesh destructor called" << std::endl; };
-	Mesh() { std::cout << "Mesh constructor called" << std::endl; };
+	Mesh() { };
 	Mesh(Vertex verts[]) {
 		subMeshes.clear();
 		subMeshes.push_back(SubMesh(verts));

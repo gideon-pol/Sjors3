@@ -24,6 +24,8 @@ void Input::Poll() {
 		_mousePosDelta = glm::vec2(0);
 	}
 
+	_mouseScrollDelta = glm::vec2(0);
+
 	for (int i = 0; i < sizeof(_mouseButtons) / sizeof(_mouseButtons[0]); i++) {
 		_mouseButtons[i].second = false;
 	}
@@ -43,6 +45,10 @@ glm::vec2 Input::GetMousePosition() {
 
 glm::vec2 Input::GetMouseDelta() {
 	return _mousePosDelta;
+}
+
+glm::vec2 Input::GetMouseScrollDelta() {
+	return _mouseScrollDelta;
 }
 
 void Input::_mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {

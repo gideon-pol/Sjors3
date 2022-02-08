@@ -14,7 +14,6 @@ glm::mat4 Camera::GetViewMatrix() {
 	view = glm::rotate(view, glm::radians<float>(rotation.x), glm::vec3(1.0f, 0, 0));
 	view = glm::rotate(view, glm::radians<float>(rotation.z), glm::vec3(0, 1.0f, 0));
 	view = glm::translate(view, -position);
-	// now get the view matrix by taking the camera inverse
 	return view;
 }
 

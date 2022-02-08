@@ -7,15 +7,19 @@ layout(location = 2) in vec2 aCoord;
 uniform mat4 lightSpaceMat;
 uniform mat4 model;
 
+uniform mat4 MVP;
+
 void main()
 {
-	gl_Position = lightSpaceMat * model * vec4(aPos, 1);
+	gl_Position = MVP * vec4(aPos, 1);
 }
 
 #shader fragment
 #version 330 core
+out vec4 FragColor;
 
 void main()
 {
-
+	FragColor = vec4(gl_FragCoord.z);
+	//gl_FragDepth = gl_FragCoord.z;
 }

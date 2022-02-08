@@ -29,26 +29,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -155,7 +155,6 @@
     <ClInclude Include="component.h" />
     <ClInclude Include="Core.h" />
     <ClInclude Include="EBO.h" />
-    <ClInclude Include="ECS.h" />
     <ClInclude Include="FBO.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="light.h" />
@@ -169,6 +168,7 @@
     <ClInclude Include="renderer.h" />
     <ClInclude Include="rendering.h" />
     <ClInclude Include="shader.h" />
+    <ClInclude Include="skybox.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="VAO.h" />
@@ -179,36 +179,33 @@
     <ClCompile Include="..\glad.c" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="EBO.cpp" />
-    <ClCompile Include="ECS.cpp" />
     <ClCompile Include="FBO.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="light.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="mesh.cpp" />
     <ClCompile Include="meshrenderer.cpp" />
-    <ClCompile Include="object.cpp" />
+    <ClCompile Include="OBJloader.cpp" />
     <ClCompile Include="postprocessing.cpp" />
     <ClCompile Include="RBO.cpp" />
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="stb.cpp" />
-    <ClCompile Include="texture.cpp" />
     <ClCompile Include="VAO.cpp" />
     <ClCompile Include="VBO.cpp" />
     <ClCompile Include="windowmanager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="assets\shaders\depth.shader" />
     <None Include="assets\shaders\diffuse.shader" />
     <None Include="assets\shaders\diffuseworld.shader" />
     <None Include="assets\shaders\pixel.frag" />
     <None Include="assets\shaders\pixel.vert" />
+    <None Include="assets\shaders\postprocessing\bloom.shader" />
+    <None Include="assets\shaders\postprocessing\colorgrading.shader" />
+    <None Include="assets\shaders\postprocessing\pixelate.shader" />
     <None Include="assets\shaders\quad.shader" />
-    <None Include="bloommix.shader" />
-    <None Include="bloom.shader" />
-    <None Include="colorgrading.shader" />
-    <None Include="pixelate.shader" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="bloomblur.shader" />
+    <None Include="assets\shaders\skybox.shader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

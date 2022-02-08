@@ -25,6 +25,8 @@ public:
 
 	static glm::vec2 GetMouseDelta();
 
+	static glm::vec2 GetMouseScrollDelta();
+
 private:
 	static glm::vec2 _mousePos;
 	static glm::vec2 _mousePosDelta;
@@ -37,6 +39,5 @@ private:
 
 	static void _mouseScrollCallback(GLFWwindow* window, double x, double y);
 };
-
 
 #endif

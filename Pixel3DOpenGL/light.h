@@ -13,9 +13,7 @@ public:
 
 	glm::vec3 color = glm::vec3(1);
 	float intensity = 1;
-
-	Light() {};
-	~Light();
+	bool castShadows = false;
 
 	void Init();
 
