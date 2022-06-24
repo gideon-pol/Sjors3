@@ -24,13 +24,12 @@ float camSpeed = 0.075f;
 
 Camera cam = Camera(70, Renderer::resolution.x, Renderer::resolution.y);
 
-Ref<Shader> diffuse;
-Ref<Shader> quad;
+Ref<Shader> diffuseShader;
+Ref<Shader> quadShader;
 Ref<Shader> depthShader;
 
 Ref<Skybox> skybox;
 
-void setupScene();
 void handleInput();
 
 Timer fpsTimer = Timer();
@@ -58,9 +57,8 @@ int main() {
 
 	Input::Init();
 
-	setupScene();
-	diffuse = Ref<Shader>(new Shader("assets/shaders/diffuse.shader"));
-	quad = Ref<Shader>(new Shader("assets/shaders/quad.shader"));
+	diffuseShader = Ref<Shader>(new Shader("assets/shaders/diffuse.shader"));
+	quadShader = Ref<Shader>(new Shader("assets/shaders/quad.shader"));
 	depthShader = Ref<Shader>(new Shader("assets/shaders/depth.shader"));
 
 	skybox = Ref<Skybox>(new Skybox("assets/textures/skybox/DaylightBox"));
@@ -73,18 +71,16 @@ int main() {
 	Ref<Texture> normalMap(new Texture("assets/textures/normalmap2.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE));
 	Ref<Texture> normalMapGround(new Texture("assets/textures/normalmapground.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE));
 
-	std::cout << std::endl << "Starting first object init" << std::endl;
 	Object house = Object();
 	house.position = glm::vec3(0, 0, 0);
 	Ref<MeshRenderer> mrenderer = house.AddComponent<MeshRenderer>();
 	Ref<Mesh> mesh = loadObj("assets/models/house.obj");
 	mrenderer->SetMesh(mesh);
 	Ref<Material> mat(new Material());
-	mat->SetShader(diffuse);
+	mat->SetShader(diffuseShader);
 	mat->SetVec3("objectColor", glm::vec3(1));
 	mat->SetFloat("specularIntensity", 1);
 	mat->SetTexture("diffuseMap", housetexture);
-	//mat->SetTexture("normalMap", normalMap);
 	Ref<Material> mathousetree(new Material(mat));
 	mathousetree->SetTexture("diffuseMap", housetreetexture);
 	mathousetree->SetFloat("specularIntensity", 0);
@@ -94,16 +90,14 @@ int main() {
 	mathouseground->SetTexture("normalMap", normalMapGround);
 	mathouseground->SetFloat("normalMapStrength", 0.25f);
 	Ref<Material> mathouseheart(new Material());
-	mathouseheart->SetShader(diffuse);
+	mathouseheart->SetShader(diffuseShader);
 	mathouseheart->SetVec3("emission", glm::vec3(10, 2, 2));
 	mrenderer->materials[0] = mat;
 	mrenderer->materials[1] = mathousetree;
 	mrenderer->materials[2] = mat;
 	mrenderer->materials[3] = mathouseground;
 	mrenderer->materials[4] = mathouseheart;
-	std::cout << "Finished first object init" << std::endl;
 
-	std::cout << std::endl << "Starting second object init" << std::endl;
 	Ref<Mesh> smallSphere = loadObj("assets/models/smallsphere.obj");
 	Object objDir = Object();
 	objDir.position = glm::vec3(-2, 2, 0);
@@ -111,7 +105,7 @@ int main() {
 	mrenderer2->SetMesh(smallSphere);
 	mrenderer2->castShadows = false;
 	Ref<Material> mat2(new Material());
-	mat2->SetShader(diffuse);
+	mat2->SetShader(diffuseShader);
 	mat2->SetVec3("objectColor", glm::vec3(1));
 	mat2->SetTexture("diffuseMap", wknd);
 	mat2->SetVec3("emission", glm::vec3(2.5, 5, 10));
@@ -121,9 +115,7 @@ int main() {
 	lightDir->color = glm::vec3(1);
 	lightDir->intensity = 1.0f;
 	lightDir->castShadows = true;
-	std::cout << "Finished second object init" << std::endl;
 
-	std::cout << std::endl << "Starting third object init" << std::endl;
 	Object objPoint = Object();
 	Ref<MeshRenderer> mrendererPoint = objPoint.AddComponent<MeshRenderer>();
 	mrendererPoint->SetMesh(smallSphere);
@@ -137,9 +129,7 @@ int main() {
 	lightPoint->color = glm::vec3(1, 1, 0);
 	lightPoint->type = LightType::Point;
 	lightPoint->intensity = 0.25f;
-	std::cout << "Finished third object init" << std::endl;
 
-	std::cout << std::endl << "Starting fourth object init" << std::endl;
 	Ref<Mesh> mesh1 = loadObj("assets/models/teapot.obj");
 	Object obj1 = Object();
 	obj1.position = glm::vec3(0, 5, 0);
@@ -151,14 +141,6 @@ int main() {
 	matw->SetFloat("normalMapStrength", 1.0f);
 	mrenderer1->SetMesh(mesh1);
 	mrenderer1->materials[0] = matw;
-	std::cout << "Finished fourth object init" << std::endl;
-
-	Object lightDirObj2 = Object();
-	Ref<Light> lightDir2 = lightDirObj2.AddComponent<Light>();
-	lightDir2->castShadows = false;
-	lightDir2->color = glm::vec3(0.5, 0.5, 1);
-	lightDir2->intensity = 0.;// 25f;
-	lightDirObj2.position = glm::vec3(-1, 1, 0);
 
 	Ref<Bloom> bloomLayer = Ref<Bloom>(new Bloom());
 	bloomLayer->quality = 4;
@@ -175,7 +157,6 @@ int main() {
 
 	FBO depthBuffer = FBO();
 	depthBuffer.GenenerateTexture(Renderer::resolution.x, Renderer::resolution.y, GL_DEPTH_ATTACHMENT, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT, GL_CLAMP_TO_BORDER, 1);
-	//depthBuffer.GenenerateTexture(Renderer::resolution.x, Renderer::resolution.y, GL_COLOR_ATTACHMENT0, GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, 1);
 
 	FBO pixelBuffer = FBO();
 	pixelBuffer.GenenerateTexture(Renderer::resolution.x, Renderer::resolution.y, GL_COLOR_ATTACHMENT0, GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, 1);
@@ -200,17 +181,10 @@ int main() {
 		handleInput();
 
 		double now = startTimer.Measure();
-		objDir.position = glm::vec3(0, 5/*sin(now / 5) * 3*/, cos(now / 5) * 3);
-		//lightDirObj2.position = -glm::vec3(0, sin(now/5) * 3, cos(now/5) * 3);
-		//lightDir->intensity = objDir.position.y / 3;
-		//lightDir2->intensity = lightDirObj2.position.y/3*0.25;
+		objDir.position = glm::vec3(0, 5, cos(now / 5) * 3);
 		objPoint.position = glm::vec3(2, 0.5, cos(now + 3.14));
-		
-		//lightPointObj.position = objPoint.position;
-		//glViewport(0, 0, ShadowWidth, ShadowHeight);
 
 		depthBuffer.Bind();
-		glEnable(GL_DEPTH_TEST);
 		glClear(GL_DEPTH_BUFFER_BIT);
 		Renderer::Clear();
 		Renderer::DrawSceneShadowMaps(depthShader);
@@ -218,65 +192,59 @@ int main() {
 		
 		glViewport(0, 0, Renderer::resolution.x, Renderer::resolution.y);
 		
-		diffuse->Activate();
-		diffuse->SetIntParameter("s_LightCount", (int)Renderer::lights.size());
+		diffuseShader->Activate();
+		diffuseShader->SetIntParameter("s_LightCount", (int)Renderer::lights.size());
 
 		for (int i = 0; i < (int)Renderer::lights.size(); i++) {
-			diffuse->SetIntParameter((std::stringstream()<<"s_Lights["<<i<<"].Type").str(), (int)Renderer::lights[i]->type);
-			diffuse->SetVec3Parameter((std::stringstream()<<"s_Lights["<<i<<"].Position").str(), Renderer::lights[i]->object->position);
-			diffuse->SetVec3Parameter((std::stringstream()<<"s_Lights["<<i<<"].Color").str(), Renderer::lights[i]->color);
-			diffuse->SetFloatParameter((std::stringstream()<<"s_Lights["<<i<<"].Intensity").str(), Renderer::lights[i]->intensity);
-			diffuse->SetIntParameter((std::stringstream()<<"s_Lights["<<i<<"].CastShadows").str(), (int)Renderer::lights[i]->castShadows);
+			diffuseShader->SetIntParameter((std::stringstream()<<"s_Lights["<<i<<"].Type").str(), (int)Renderer::lights[i]->type);
+			diffuseShader->SetVec3Parameter((std::stringstream()<<"s_Lights["<<i<<"].Position").str(), Renderer::lights[i]->object->position);
+			diffuseShader->SetVec3Parameter((std::stringstream()<<"s_Lights["<<i<<"].Color").str(), Renderer::lights[i]->color);
+			diffuseShader->SetFloatParameter((std::stringstream()<<"s_Lights["<<i<<"].Intensity").str(), Renderer::lights[i]->intensity);
+			diffuseShader->SetIntParameter((std::stringstream()<<"s_Lights["<<i<<"].CastShadows").str(), (int)Renderer::lights[i]->castShadows);
 			if (Renderer::lights[i]->type == LightType::Directional && Renderer::lights[i]->castShadows) {
 				glm::mat4 lightSpaceMat = Renderer::lights[i]->GetDirectionalLightMatrix();
-				diffuse->SetMat4Parameter((std::stringstream() << "s_LightSpaceMat").str(), glm::value_ptr(lightSpaceMat));
+				diffuseShader->SetMat4Parameter((std::stringstream() << "s_LightSpaceMat").str(), glm::value_ptr(lightSpaceMat));
 			}
 		}
 		
-		diffuse->SetFloatParameter("s_AmbientIntensity", 0.2);
-		diffuse->SetVec3Parameter("s_AmbientColor", glm::vec3(1));
-		diffuse->SetVec3Parameter("s_ViewPos", cam.position);
-		diffuse->SetFloatParameter("s_Time", startTimer.Measure());
-		diffuse->SetFloatParameter("s_DeltaTime", deltaTime);
+		diffuseShader->SetFloatParameter("s_AmbientIntensity", 0.2);
+		diffuseShader->SetVec3Parameter("s_AmbientColor", glm::vec3(1));
+		diffuseShader->SetVec3Parameter("s_ViewPos", cam.position);
+		diffuseShader->SetFloatParameter("s_Time", startTimer.Measure());
+		diffuseShader->SetFloatParameter("s_DeltaTime", deltaTime);
 
 		glActiveTexture(GL_TEXTURE31);
 		depthBuffer.BindTexture(0); //ALWAYS BIND TEXTURE AFTER CREATION OF FRAMEBUFFER TEXTURES
 
-		diffuse->SetIntParameter("s_ShadowMap", 31);
-
+		diffuseShader->SetIntParameter("s_ShadowMap", 31);
 
 		pixelBuffer.Bind();
 		glEnable(GL_DEPTH_TEST);
 		Renderer::Clear();
-		//Renderer::DrawSkybox(skybox);
+		Renderer::DrawSkybox(skybox);
 		Renderer::DrawScene();
 		pixelBuffer.Unbind();
 
 		Ref<Texture> tex(new Texture(pixelBuffer.TexID[0]));
 		Ref<Texture> bloomedTex = PostProcessing::Apply(tex);
 		
-		quad->Activate();
+		quadShader->Activate();
 
 		glActiveTexture(GL_TEXTURE0);
 		bloomedTex ->Bind();
 
 		Renderer::Clear();
 		glDisable(GL_DEPTH_TEST);
-		Renderer::DrawQuad(quad);
+		Renderer::DrawQuad(quadShader);
+		glEnable(GL_DEPTH_TEST);
 
 		WindowManager::Display();
 		Input::Poll();
 		glfwPollEvents();
 	}
 
-	diffuse->Delete();
-
 	WindowManager::Destroy();
 	glfwTerminate();
-}
-
-void setupScene() {
-	
 }
 
 void handleInput() {
@@ -300,8 +268,8 @@ void handleInput() {
 		cam.rotation.x -= 0.25f;
 	}
 	if (Input::GetKey(GLFW_KEY_U)) {
-		diffuse->Delete();
-		diffuse = Ref<Shader>(new Shader("assets/shaders/diffuse.shader"));
+		diffuseShader->Delete();
+		diffuseShader = Ref<Shader>(new Shader("assets/shaders/diffuseShader.shader"));
 	}
 
 	if (Input::GetKey(GLFW_KEY_LEFT_SHIFT)) {

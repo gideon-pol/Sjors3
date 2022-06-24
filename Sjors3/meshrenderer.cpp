@@ -64,7 +64,7 @@ void MeshRenderer::_draw(Ref<Shader> shader) {
 	glm::mat4 VP = Renderer::activeCamera->GetVPMatrix();
 	glm::mat4 MVP = VP * model;
 
-	//shader->SetMat4Parameter("MVP", glm::value_ptr(MVP));
+	shader->SetMat4Parameter("MVP", glm::value_ptr(MVP));
 	shader->SetMat4Parameter("model", glm::value_ptr(model));
 
 	for (int i = 0; i <  _mesh->subMeshes.size(); i++) {

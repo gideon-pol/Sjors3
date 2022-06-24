@@ -23,11 +23,6 @@ public:
 	std::vector<GLuint> indeces;
 
 	SubMesh() { };
-	SubMesh(Vertex verts[]) {
-		for (int i = 0; i < sizeof(verts) / sizeof(Vertex); i++) {
-			vertices.push_back(verts[i]);
-		}
-	}
 
 	SubMesh(std::vector<Vertex> verts) {
 		vertices = verts;
@@ -44,10 +39,6 @@ public:
 	std::vector<SubMesh> subMeshes = {};
 
 	Mesh() { };
-	Mesh(Vertex verts[]) {
-		subMeshes.clear();
-		subMeshes.push_back(SubMesh(verts));
-	}
 
 	Mesh(std::vector<Vertex> verts) {
 		subMeshes.clear();

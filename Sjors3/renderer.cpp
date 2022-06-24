@@ -110,6 +110,8 @@ void Renderer::DrawSceneShadowMaps(Ref<Shader> depthShader) {
 }
 
 void Renderer::DrawSkybox(Ref<Skybox> skybox) {
+	glDepthMask(GL_FALSE);
+
 	skyboxShader->Activate();
 	glActiveTexture(GL_TEXTURE0);
 	skybox->Bind();
@@ -118,10 +120,7 @@ void Renderer::DrawSkybox(Ref<Skybox> skybox) {
 	skyboxShader->SetMat4Parameter("VP", glm::value_ptr(VP));
 	skyboxShader->SetFloatParameter("exposure", skybox->exposure);
 
-	glDepthFunc(GL_LEQUAL);
-	glDepthMask(GL_FALSE);
 	Draw(skyboxVAO, skyboxMesh->GetSubMesh(0)->GetSize());
-	glDepthMask(GL_TRUE);
-	glDepthFunc(GL_LESS);
 
+	glDepthMask(GL_TRUE);
 }

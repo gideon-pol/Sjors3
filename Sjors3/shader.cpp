@@ -91,15 +91,14 @@ void Shader::_createShader(const char* vertexSource, const char* fragSource) {
 	if (_checkCompile(ShaderType::PROGRAM)) {
 		GLint count;
 
-		GLint size; // size of the variable
-		GLenum type; // type of the variable (float, vec3 or mat4, etc)
+		GLint size;
+		GLenum type;
 
-		const GLsizei bufSize = 32; // maximum parameter length
-		GLchar parameter[bufSize]; // variable parameter in GLSL
-		GLsizei length; // parameter length
+		const GLsizei bufSize = 32;
+		GLchar parameter[bufSize];
+		GLsizei length;
 
 		glGetProgramiv(ID, GL_ACTIVE_UNIFORMS, &count);
-		//printf("\nActive Uniforms: %d\n", count);
 
 		for (int i = 0; i < count; i++)
 		{
@@ -107,7 +106,6 @@ void Shader::_createShader(const char* vertexSource, const char* fragSource) {
 			std::string uniform = std::string(parameter, length);
 			GLint uniformLocation = glGetUniformLocation(ID, uniform.c_str());
 			_uniforms.emplace(uniform, std::make_pair(type, uniformLocation));
-			//printf("Uniform #%d Type: %u Name: %s\n", i, type, parameter);
 		}
 	}
 
@@ -128,9 +126,6 @@ void Shader::SetFloatParameter(std::string parameter, float value) {
 void Shader::SetIntParameter(std::string parameter, int value) {
 	if (_uniforms.find(parameter) != _uniforms.end()) {
 		glUniform1i(_uniforms[parameter].second, value);
-	}
-	else {
-		std::cout << "No uniform of name " << parameter << std::endl;
 	}
 }
 
